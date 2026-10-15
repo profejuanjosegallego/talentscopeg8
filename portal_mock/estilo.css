@@ -1,0 +1,5 @@
+body{font-family:system-ui,sans-serif;max-width:900px;margin:auto;padding:16px;background:#f6f7fb;color:#1d2433}
+header{display:flex;justify-content:space-between;align-items:center}h1{font-size:22px}
+.card,.job-card{background:#fff;border:1px solid #dde1ea;border-radius:8px;padding:12px 16px;margin:10px 0}
+.salario,.salary{color:#0a6b3d;font-weight:600}.tag{display:inline-block;background:#e8ecf7;border-radius:4px;padding:2px 6px;margin:2px;font-size:12px}
+nav.paginacion a,nav.pager a{margin-right:12px}footer{margin-top:24px;font-size:12px;color:#667}

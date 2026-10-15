@@ -1,0 +1,41 @@
+id_registro,fuente,rol,anios_experiencia,salario_mensual_cop,ciudad,skills,modalidad
+ENC-0001,talentia,Desarrollador Full Stack,2,5520000,Bogotá,Java|Docker|Git,Híbrido
+ENC-0002,uniandina,Soporte TI,0,2200000,Bogotá,Windows|Excel|Linux,Presencial
+ENC-0003,talentia,Ingeniero de Datos,1,5500000,Bogotá,SQL|ETL|Docker,Remoto
+ENC-0004,talentia,Soporte TI,0,2200000,Bogotá,Linux|Windows|Redes,Presencial
+ENC-0005,uniandina,Desarrollador Frontend,6,6080000,Remoto,JavaScript|HTML|TypeScript,Remoto
+ENC-0006,uniandina,Analista de Datos,1,3850000,Cali,Python|Power BI|Tableau,Remoto
+ENC-0007,uniandina,Desarrollador Backend Java,9,8549999,Barranquilla,AWS|JUnit|Kafka,Híbrido
+ENC-0008,talentia,DevOps,9,10450000,Cali,AWS|Kubernetes|Git,Remoto
+ENC-0009,talentia,Ingeniero de Datos,1,5500000,Remoto,ETL|Spark|Docker,Híbrido
+ENC-0010,uniandina,Desarrollador Frontend,9,7220000,Bogotá,HTML|CSS|React,Híbrido
+ENC-0011,talentia,Analista de Datos,7,5950000,Bogotá,Estadística|Python|Power BI,Remoto
+ENC-0012,talentia,Desarrollador Full Stack,5,6899999,Remoto,SQL|Docker|Git,Presencial
+ENC-0013,talentia,Desarrollador Python,4,5880000,Bogotá,Python|Docker|Pytest,Híbrido
+ENC-0014,talentia,Soporte TI,10,4400000,Cali,Excel|Redes|Windows,Híbrido
+ENC-0015,uniandina,Desarrollador Full Stack,2,5520000,Barranquilla,Java|Spring Boot|React,Presencial
+ENC-0016,talentia,Ingeniero de Datos,6,8000000,Barranquilla,SQL|ETL|Airflow,Híbrido
+ENC-0017,uniandina,Científico de Datos,4,7279999,Barranquilla,Estadística|Machine Learning|SQL,Híbrido
+ENC-0018,uniandina,QA Automation,3,4680000,Bogotá,Java|Scrum|JUnit,Remoto
+ENC-0019,talentia,Ingeniero de Datos,0,5000000,Remoto,Spark|ETL|Pandas,Presencial
+ENC-0020,talentia,Analista de Datos,6,5600000,Remoto,Power BI|SQL|Pandas,Remoto
+ENC-0021,uniandina,Científico de Datos,9,9879999,Barranquilla,Scikit-learn|Estadística|SQL,Híbrido
+ENC-0022,uniandina,QA Automation,6,5760000,Barranquilla,JUnit|Cypress|Selenium,Presencial
+ENC-0023,talentia,Desarrollador Python,3,5460000,Medellín,Django|FastAPI|Git,Presencial
+ENC-0024,uniandina,Desarrollador Python,0,4200000,Remoto,Django|FastAPI|Git,Presencial
+ENC-0025,talentia,Desarrollador Python,3,5460000,Medellín,Git|FastAPI|Linux,Híbrido
+ENC-0026,uniandina,DevOps,1,6050000,Barranquilla,Linux|CI/CD|Git,Híbrido
+ENC-0027,uniandina,Desarrollador Python,2,5040000,Cali,Git|SQL|Docker,Presencial
+ENC-0028,uniandina,Científico de Datos,0,5200000,Remoto,Machine Learning|Pandas|Python,Remoto
+ENC-0029,uniandina,Desarrollador Frontend,10,7600000,Cali,HTML|TypeScript|React,Híbrido
+ENC-0030,talentia,Ingeniero de Datos,8,9000000,Medellín,Airflow|Pandas|SQL,Híbrido
+ENC-0031,talentia,Ingeniero de Datos,3,6500000,Cali,Python|ETL|Spark,Híbrido
+ENC-0032,talentia,Desarrollador Frontend,3,4939999,Barranquilla,Angular|Git|TypeScript,Híbrido
+ENC-0033,uniandina,Desarrollador Python,3,5460000,Medellín,Linux|Django|FastAPI,Presencial
+ENC-0034,uniandina,DevOps,9,10450000,Barranquilla,Git|AWS|Docker,Remoto
+ENC-0035,uniandina,Desarrollador Python,6,6720000,Barranquilla,FastAPI|SQL|Docker,Híbrido
+ENC-0036,talentia,Desarrollador Python,6,6720000,Barranquilla,Django|Docker|Linux,Presencial
+ENC-0037,uniandina,Analista de Datos,0,3500000,Remoto,Excel|Estadística|Pandas,Remoto
+ENC-0038,talentia,Soporte TI,7,3740000,Medellín,Atención al cliente|Linux|Windows,Presencial
+ENC-0039,uniandina,Desarrollador Python,8,7560000,Barranquilla,SQL|Pytest|Django,Presencial
+ENC-0040,talentia,Desarrollador Frontend,3,4939999,Remoto,React|HTML|TypeScript,Híbrido

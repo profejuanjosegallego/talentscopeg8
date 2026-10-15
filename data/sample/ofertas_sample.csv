@@ -1,0 +1,41 @@
+id_oferta,fuente,titulo,rol,nivel,empresa,ciudad,modalidad,salario_min,salario_max,moneda,fecha_publicacion,skills,fecha_extraccion
+ET-10450,empleostech,Desarrollador Python Junior,Desarrollador Python,Junior,Movilidad Urbana SAS,Remoto,Remoto,4200000,5700000,COP,2026-10-15,Pytest|Linux|Git|Docker,2026-10-15T08:00:00
+ET-10451,empleostech,DevOps Junior,DevOps,Junior,AgroData,Medellín,Híbrido,5500000,7400000,COP,2026-10-15,CI/CD|Docker|Linux|Git|AWS,2026-10-15T08:00:00
+ET-10452,empleostech,Desarrollador Full Stack Senior,Desarrollador Full Stack,Senior,Retail Andino,Remoto,Remoto,11000000,14900000,COP,2026-10-15,JavaScript|React|Java,2026-10-15T08:00:00
+ET-10453,empleostech,DevOps Junior,DevOps,Junior,Logística 360,Medellín,Híbrido,5500000,7400000,COP,2026-10-15,CI/CD|Git|AWS,2026-10-15T08:00:00
+ET-10454,empleostech,Soporte TI Semi Senior,Soporte TI,Semi Senior,Seguros Cumbre,Remoto,Remoto,3500000,4800000,COP,2026-10-15,Excel|Redes|Linux|Atención al cliente|Windows,2026-10-15T08:00:00
+ET-10455,empleostech,Desarrollador Backend Java Senior,Desarrollador Backend Java,Senior,EduNube,Medellín,Híbrido,10800000,14600000,COP,2026-10-15,Kafka|SQL|Docker|Spring Boot|Java|JUnit,2026-10-15T08:00:00
+ET-10456,empleostech,Científico de Datos Junior,Científico de Datos,Junior,NubeCol,Remoto,Remoto,5200000,7000000,COP,2026-10-15,SQL|Pandas|Machine Learning|Estadística|Python|Scikit-learn,2026-10-15T08:00:00
+ET-10457,empleostech,Científico de Datos Senior,Científico de Datos,Senior,SaludTech,Bogotá,Híbrido,12500000,16800000,COP,2026-10-15,Scikit-learn|SQL|Estadística|Machine Learning|Pandas,2026-10-15T08:00:00
+ET-10458,empleostech,Desarrollador Full Stack Semi Senior,Desarrollador Full Stack,Semi Senior,EduNube,Barranquilla,Híbrido,7400000,9900000,COP,2026-10-15,SQL|Spring Boot|Git|Docker|Java,2026-10-15T08:00:00
+ET-10459,empleostech,Desarrollador Python Junior,Desarrollador Python,Junior,DataPaisa,Remoto,Remoto,4200000,5700000,COP,2026-10-15,Python|Linux|Pytest|SQL|Docker|FastAPI,2026-10-15T08:00:00
+ET-10460,empleostech,Desarrollador Backend Java Semi Senior,Desarrollador Backend Java,Semi Senior,Seguros Cumbre,Remoto,Remoto,7200000,9700000,COP,2026-10-15,Java|Microservicios|Kafka|Git,2026-10-15T08:00:00
+ET-10461,empleostech,Científico de Datos Junior,Científico de Datos,Junior,Seguros Cumbre,Medellín,Híbrido,5200000,7000000,COP,2026-10-15,SQL|Pandas|Estadística,2026-10-15T08:00:00
+ET-10462,empleostech,Analista de Datos Semi Senior,Analista de Datos,Semi Senior,Logística 360,Bogotá,Presencial,5600000,7600000,COP,2026-10-15,Excel|Python|Estadística,2026-10-15T08:00:00
+ET-10463,empleostech,Científico de Datos Semi Senior,Científico de Datos,Semi Senior,NubeCol,Cali,Híbrido,8300000,11200000,COP,2026-10-15,Python|SQL|Estadística|Machine Learning|Scikit-learn,2026-10-15T08:00:00
+ET-10464,empleostech,Soporte TI Junior,Soporte TI,Junior,EduNube,Medellín,Híbrido,2200000,3000000,COP,2026-10-15,Windows|Linux|Redes|Atención al cliente|Excel,2026-10-15T08:00:00
+ET-10465,empleostech,Ingeniero de Datos Semi Senior,Ingeniero de Datos,Semi Senior,NubeCol,Cali,Híbrido,8000000,10800000,COP,2026-10-15,Airflow|Pandas|AWS|SQL,2026-10-15T08:00:00
+ET-10466,empleostech,QA Automation Semi Senior,QA Automation,Semi Senior,AgroData,Remoto,Remoto,5800000,7800000,COP,2026-10-15,Java|Python|Scrum|JUnit|Git,2026-10-15T08:00:00
+ET-10467,empleostech,Desarrollador Frontend Semi Senior,Desarrollador Frontend,Semi Senior,DataPaisa,Bogotá,Híbrido,6100000,8199999,COP,2026-10-15,JavaScript|HTML|Git|TypeScript|Angular|CSS,2026-10-15T08:00:00
+ET-10468,empleostech,Desarrollador Full Stack Junior,Desarrollador Full Stack,Junior,Retail Andino,Barranquilla,Presencial,4600000,6200000,COP,2026-10-15,React|Spring Boot|Git,2026-10-15T08:00:00
+ET-10469,empleostech,Soporte TI Semi Senior,Soporte TI,Semi Senior,Fintech Pacífico,Medellín,Presencial,3500000,4800000,COP,2026-10-15,Atención al cliente|Redes|Excel|Windows|Linux,2026-10-15T08:00:00
+ET-10470,empleostech,Desarrollador Python Semi Senior,Desarrollador Python,Semi Senior,Seguros Cumbre,Cali,Híbrido,6700000,9100000,COP,2026-10-15,Django|Git|FastAPI|Docker,2026-10-15T08:00:00
+ET-10471,empleostech,Analista de Datos Junior,Analista de Datos,Junior,Andes Software,Bogotá,Híbrido,3500000,4700000,COP,2026-10-15,Excel|Python|Estadística|Power BI|Tableau,2026-10-15T08:00:00
+ET-10472,empleostech,Científico de Datos Semi Senior,Científico de Datos,Semi Senior,Seguros Cumbre,Remoto,Remoto,8300000,11200000,COP,2026-10-15,SQL|Estadística|Python|Pandas|Machine Learning,2026-10-15T08:00:00
+ET-10473,empleostech,QA Automation Senior,QA Automation,Senior,Movilidad Urbana SAS,Remoto,Remoto,8600000,11700000,COP,2026-10-15,Cypress|Python|JUnit|Selenium|Git,2026-10-15T08:00:00
+ET-10474,empleostech,Desarrollador Frontend Semi Senior,Desarrollador Frontend,Semi Senior,Logística 360,Bogotá,Híbrido,6100000,8199999,COP,2026-10-15,Angular|CSS|TypeScript|JavaScript|HTML,2026-10-15T08:00:00
+ET-10475,empleostech,Desarrollador Python Junior,Desarrollador Python,Junior,Andes Software,Bogotá,Híbrido,4200000,5700000,COP,2026-10-15,Docker|Git|Linux|FastAPI,2026-10-15T08:00:00
+ET-10476,empleostech,QA Automation Junior,QA Automation,Junior,EduNube,Bogotá,Híbrido,3600000,4900000,COP,2026-10-15,Scrum|Java|JUnit|Selenium,2026-10-15T08:00:00
+ET-10477,empleostech,Desarrollador Frontend Semi Senior,Desarrollador Frontend,Semi Senior,NubeCol,Bogotá,Presencial,6100000,8199999,COP,2026-10-15,HTML|CSS|Git|TypeScript|React,2026-10-15T08:00:00
+ET-10478,empleostech,Analista de Datos Semi Senior,Analista de Datos,Semi Senior,EduNube,Cali,Presencial,5600000,7600000,COP,2026-10-15,SQL|Estadística|Power BI|Tableau|Python,2026-10-15T08:00:00
+ET-10479,empleostech,DevOps Junior,DevOps,Junior,Retail Andino,Bogotá,Presencial,5500000,7400000,COP,2026-10-15,Git|Linux|AWS|Kubernetes,2026-10-15T08:00:00
+ET-10480,empleostech,Desarrollador Full Stack Junior,Desarrollador Full Stack,Junior,Andes Software,Medellín,Híbrido,4600000,6200000,COP,2026-10-15,Spring Boot|Git|SQL|JavaScript|Docker,2026-10-15T08:00:00
+ET-10481,empleostech,QA Automation Semi Senior,QA Automation,Semi Senior,Movilidad Urbana SAS,Medellín,Híbrido,5800000,7800000,COP,2026-10-15,Python|Git|Scrum|Java|JUnit,2026-10-15T08:00:00
+ET-10482,empleostech,Ingeniero de Datos Senior,Ingeniero de Datos,Senior,Retail Andino,Cali,Híbrido,12000000,16200000,COP,2026-10-15,Pandas|Airflow|AWS,2026-10-15T08:00:00
+ET-10483,empleostech,Desarrollador Python Junior,Desarrollador Python,Junior,NubeCol,Cali,Híbrido,4200000,5700000,COP,2026-10-15,Git|Python|Docker|Linux|Django,2026-10-15T08:00:00
+ET-10484,empleostech,Desarrollador Frontend Junior,Desarrollador Frontend,Junior,SaludTech,Remoto,Remoto,3800000,5100000,COP,2026-10-15,Angular|HTML|CSS,2026-10-15T08:00:00
+ET-10485,empleostech,Analista de Datos Semi Senior,Analista de Datos,Semi Senior,Logística 360,Bogotá,Presencial,5600000,7600000,COP,2026-10-15,Pandas|Python|Estadística|Power BI,2026-10-15T08:00:00
+ET-10486,empleostech,Científico de Datos Junior,Científico de Datos,Junior,Movilidad Urbana SAS,Medellín,Híbrido,5200000,7000000,COP,2026-10-15,Machine Learning|SQL|Python,2026-10-15T08:00:00
+ET-10487,empleostech,Desarrollador Frontend Semi Senior,Desarrollador Frontend,Semi Senior,Logística 360,Bogotá,Híbrido,6100000,8199999,COP,2026-10-15,HTML|Angular|React,2026-10-15T08:00:00
+ET-10488,empleostech,Desarrollador Python Junior,Desarrollador Python,Junior,Logística 360,Remoto,Remoto,4200000,5700000,COP,2026-10-15,Git|Pytest|Docker|Django|Linux,2026-10-15T08:00:00
+ET-10489,empleostech,Desarrollador Full Stack Junior,Desarrollador Full Stack,Junior,Logística 360,Remoto,Remoto,4600000,6200000,COP,2026-10-15,React|Spring Boot|JavaScript|SQL|Java|Docker,2026-10-15T08:00:00

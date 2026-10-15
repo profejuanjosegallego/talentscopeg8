@@ -1,0 +1,263 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tablero TalentScope</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a working board. Status strip on top, "my assignment" picker, matrix, then the filterable backlog. */
+:root{
+  --bg:#f3f6f5; --surface:#ffffff; --ink:#14231f; --muted:#56655f; --line:#d5dfdb;
+  --accent:#0f6b58; --accent-soft:#dcefe9; --marker:#f2c14e; --marker-soft:#fbefcc;
+  --sqA:#2f6fb0; --sqA-soft:#e1ecf8; --sqB:#9a5b16; --sqB-soft:#f6eadb; --sqC:#7a3f9b; --sqC-soft:#efe4f5; --sqD:#b0304f; --sqD-soft:#f8e1e7; --sqT:#0f6b58; --sqT-soft:#dcefe9;
+  --f-display:"Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1715; --surface:#16211e; --ink:#e3ece8; --muted:#97a8a1; --line:#2a3833;
+  --accent:#5cc4a8; --accent-soft:#183a32; --marker:#e9b949; --marker-soft:#3b3218;
+  --sqA:#7fb2e6; --sqA-soft:#1b2c3e; --sqB:#e0a35c; --sqB-soft:#3a2a17; --sqC:#c69ae0; --sqC-soft:#2f2238; --sqD:#f08aa3; --sqD-soft:#3b1d26; --sqT:#5cc4a8; --sqT-soft:#183a32; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1715; --surface:#16211e; --ink:#e3ece8; --muted:#97a8a1; --line:#2a3833;
+  --accent:#5cc4a8; --accent-soft:#183a32; --marker:#e9b949; --marker-soft:#3b3218;
+  --sqA:#7fb2e6; --sqA-soft:#1b2c3e; --sqB:#e0a35c; --sqB-soft:#3a2a17; --sqC:#c69ae0; --sqC-soft:#2f2238; --sqD:#f08aa3; --sqD-soft:#3b1d26; --sqT:#5cc4a8; --sqT-soft:#183a32; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:grid;gap:40px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,4vw,40px)} h2{font-size:24px} h3{font-size:17px}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+section{display:grid;gap:16px;min-width:0}
+.lead{max-width:68ch;color:var(--muted)}
+header.top{display:grid;gap:12px}
+.status{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+/* sprint strip */
+.strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.sp{padding:12px 14px;display:grid;gap:4px;border-right:1px solid var(--line);min-width:0}
+.sp:last-child{border-right:0}
+.sp .n{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.sp b{font-family:var(--f-display);font-size:15px;line-height:1.2}
+.sp .d{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.sp.past{opacity:.6}
+.sp.now{background:var(--marker-soft);box-shadow:inset 0 -4px 0 var(--marker)}
+@media (max-width:760px){.strip{grid-template-columns:1fr}.sp{border-right:0;border-bottom:1px solid var(--line)}.sp:last-child{border-bottom:0}}
+/* mine */
+.mine{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:grid;gap:16px}
+.picker{display:flex;flex-wrap:wrap;gap:6px}
+.picker button{font-family:var(--f-mono);font-size:13px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:6px 10px;cursor:pointer}
+.picker button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.picker button:focus-visible,.chip:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mine-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.mine-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.mine-grid{grid-template-columns:1fr}}
+.mcard{border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:8px;align-content:start;min-width:0}
+.mcard.now{border-color:var(--marker);background:var(--marker-soft)}
+.mcard ul{margin:0;padding-left:18px;font-size:13.5px;color:var(--muted)}
+/* tags */
+.tag{display:inline-block;font-family:var(--f-mono);font-size:11.5px;font-weight:600;border-radius:4px;padding:2px 6px;white-space:nowrap}
+.sq-A{color:var(--sqA);background:var(--sqA-soft)} .sq-B{color:var(--sqB);background:var(--sqB-soft)} .sq-C{color:var(--sqC);background:var(--sqC-soft)} .sq-D{color:var(--sqD);background:var(--sqD-soft)} .sq-Todos{color:var(--sqT);background:var(--sqT-soft)}
+.sm{color:var(--ink);background:var(--marker)}
+.pts{color:var(--muted);border:1px solid var(--line)}
+.reserved{font-style:italic;color:var(--muted)}
+/* matrix */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:860px;font-size:13.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);position:sticky;top:0}
+tbody th{font-family:var(--f-mono);font-weight:600;white-space:nowrap}
+td.now{background:var(--marker-soft)}
+tr.sq-sep td,tr.sq-sep th{border-top:2px solid var(--ink)}
+.cell{display:grid;gap:3px}
+/* backlog */
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font-family:var(--f-body);font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.sep{width:1px;height:22px;background:var(--line)}
+.hus{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:800px){.hus{grid-template-columns:1fr}}
+details.hu{background:var(--surface);border:1px solid var(--line);border-radius:10px;min-width:0}
+details.hu summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;gap:6px}
+details.hu summary::-webkit-details-marker{display:none}
+.hu-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.hu-body{padding:0 16px 16px;display:grid;gap:10px;font-size:14px}
+.story{border-left:3px solid var(--marker);padding-left:12px}
+.hu-body ul{margin:0;padding-left:20px}
+.done{opacity:.65}
+/* how we work */
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+.cols>div{display:grid;gap:8px;align-content:start;min-width:0}
+.cols ul{margin:0;padding-left:18px}
+.bar{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;font-size:13.5px}
+.bar .track{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar .fill{height:100%;background:var(--accent)}
+footer{font-size:12.5px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">DataNexo S.A.S. · Proyecto TalentScope</span>
+    <h1>Tablero del proyecto</h1>
+    <p class="lead">Observatorio del mercado laboral tech para la Red de Empleabilidad Universitaria. 24 personas en cuatro squads, sprints de dos semanas, un cliente con preguntas concretas: qué skills se piden, cuánto se paga y qué tan alineados están los programas.</p>
+    <p class="status"><span class="dot"></span><span id="status">Cargando estado…</span></p>
+  </header>
+
+  <section aria-labelledby="t-sprints">
+    <h2 id="t-sprints">Sprints</h2>
+    <div class="strip" id="strip"></div>
+  </section>
+
+  <section class="mine" aria-labelledby="t-mine">
+    <div style="display:grid;gap:6px">
+      <h2 id="t-mine">Mi asignación</h2>
+      <p class="lead">Elige tu código para ver tus HU de cada sprint. El código te lo da el docente en el kickoff.</p>
+    </div>
+    <div class="picker" id="picker" role="group" aria-label="Integrante"></div>
+    <div class="mine-grid" id="mine"></div>
+  </section>
+
+  <section aria-labelledby="t-matrix">
+    <h2 id="t-matrix">Asignaciones por quincena</h2>
+    <p class="lead">Cada integrante tiene una HU por sprint. <span class="tag sm">SM</span> marca al Scrum Master del sprint (rota dentro del squad).</p>
+    <div class="scroll"><table id="matrix"></table></div>
+  </section>
+
+  <section aria-labelledby="t-backlog">
+    <h2 id="t-backlog">Backlog</h2>
+    <div class="filters" id="filters"></div>
+    <div class="hus" id="hus"></div>
+  </section>
+
+  <section aria-labelledby="t-how">
+    <h2 id="t-how">Cómo trabajamos</h2>
+    <div class="cols">
+      <div>
+        <h3>Ceremonias</h3>
+        <ul>
+          <li><b>Planning</b> · primer día del sprint, 45 min</li>
+          <li><b>Daily escrita</b> · cada día: qué hice, qué haré, qué me bloquea</li>
+          <li><b>Refinamiento</b> · mitad del sprint, 30 min</li>
+          <li><b>Review con el cliente</b> · último día, 10 min por squad</li>
+          <li><b>Retrospectiva</b> · último día, 20 min</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Definición de Hecho</h3>
+        <ul>
+          <li>Criterios de aceptación cumplidos</li>
+          <li>Tests nuevos y <code>pytest</code> completo en verde</li>
+          <li>Pull request aprobado por alguien del squad</li>
+          <li>Documentación y contrato de datos al día</li>
+          <li>Los datos crudos no se editan a mano</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Evaluación de cada sprint</h3>
+        <div class="bar" id="rubric"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Backlog de TalentScope · lo mantiene el Product Owner.</footer>
+</div>
+
+<script id="backlog-data" type="application/json">{"proyecto": "TalentScope", "sprints": [{"n": 0, "nombre": "Sprint 0 (equipo anterior)", "inicio": "2026-09-17", "fin": "2026-10-14", "objetivo": "Prototipo: scraper de una página, lector de una encuesta y reporte básico."}, {"n": 1, "nombre": "Sprint 1 · Onboarding y deuda", "inicio": "2026-10-15", "fin": "2026-10-28", "objetivo": "Entender el código heredado, corregir los bugs conocidos y dejar los tests en verde."}, {"n": 2, "nombre": "Sprint 2 · Datos confiables", "inicio": "2026-10-29", "fin": "2026-11-11", "objetivo": "Cada fuente entrega datos limpios en CSV y Excel; primeros indicadores y reportes."}, {"n": 3, "nombre": "Sprint 3 · Automatización", "inicio": "2026-11-12", "fin": "2026-11-25", "objetivo": "El sistema corre solo, aguanta cambios en las fuentes y entrega reportes útiles para los estudiantes."}, {"n": 4, "nombre": "Sprint 4 · Integración y entrega", "inicio": "2026-11-26", "fin": "2026-12-09", "objetivo": "Pipeline de punta a punta, QA cruzado y demo final al cliente."}], "squads": {"A": {"nombre": "Squad A · Scraping", "foco": "Traer las ofertas del portal EmpleosTech y de una segunda fuente pública."}, "B": {"nombre": "Squad B · Excel de aliados", "foco": "Leer, limpiar, validar y consolidar los Excel que envían universidades y consultoras."}, "C": {"nombre": "Squad C · Análisis", "foco": "Calcular con pandas los indicadores que responden las preguntas del cliente."}, "D": {"nombre": "Squad D · Reportes y automatización", "foco": "Convertir los indicadores en Excel, gráficos y HTML, y hacer que todo corra solo."}}, "hu": [{"id": "HU-01", "squad": "A", "sprint": 0, "estado": "Hecha", "pts": 3, "asignado": [], "titulo": "Scraper básico del listado", "como": "analista del cliente", "quiero": "obtener las ofertas publicadas en EmpleosTech", "para": "no copiarlas a mano", "criterios": ["Extrae título, empresa, ciudad, salario y fecha de la página 1", "Guarda un CSV en data/processed"]}, {"id": "HU-02", "squad": "B", "sprint": 0, "estado": "Hecha", "pts": 2, "asignado": [], "titulo": "Lector de la encuesta Universidad Andina", "como": "analista del cliente", "quiero": "cargar la encuesta salarial de Universidad Andina", "para": "usarla en el análisis", "criterios": ["Lee la hoja Respuestas", "Renombra columnas al contrato (tiene BUG-02)"]}, {"id": "HU-03", "squad": "C", "sprint": 0, "estado": "Hecha", "pts": 2, "asignado": [], "titulo": "Prototipo de reporte semanal", "como": "coordinador de empleabilidad", "quiero": "un Excel con las skills más pedidas", "para": "discutirlo en el comité", "criterios": ["Genera reporte_semanal.xlsx con top 10 skills (tiene BUG-03)"]}, {"id": "BUG-04", "squad": "A", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["A1"], "titulo": "El scraper se puede colgar y daña las tildes", "como": "equipo de desarrollo", "quiero": "que el scraper no se quede esperando para siempre", "para": "poder dejarlo corriendo solo", "criterios": ["requests.get usa timeout=10", "Si falla, reintenta hasta 3 veces con un for y time.sleep", "Las tildes salen bien: hoy el CSV trae MedellÃ­n en vez de Medellín (pista: response.encoding)", "Si después de 3 intentos no funciona, lanza una excepción con un mensaje claro"]}, {"id": "HU-10", "squad": "A", "sprint": 1, "estado": "Por hacer", "pts": 3, "asignado": ["A2"], "titulo": "Recorrer todas las páginas del listado", "como": "analista del cliente", "quiero": "las ofertas de todas las páginas", "para": "no perder el 80% de los datos", "criterios": ["Sigue el enlace 'Siguiente' (a[rel=next]) hasta que no exista", "Arma la URL completa con urljoin", "Con el portal actual obtiene 118 ofertas", "Tiene un máximo de páginas para no quedar en un ciclo infinito"]}, {"id": "HU-11", "squad": "A", "sprint": 1, "estado": "Por hacer", "pts": 3, "asignado": ["A3"], "titulo": "Leer el detalle de cada oferta", "como": "analista del cliente", "quiero": "las habilidades y la modalidad de cada oferta", "para": "saber qué tecnologías pide el mercado", "criterios": ["Función parsear_detalle(html) que devuelve skills, modalidad y descripción", "Las skills se unen con | (contrato de datos)", "Test con tests/fixtures/detalle_oferta.html"]}, {"id": "HU-13", "squad": "A", "sprint": 1, "estado": "Por hacer", "pts": 5, "asignado": ["A4"], "titulo": "Convertir el texto del salario en números", "como": "analista del cliente", "quiero": "el salario como mínimo, máximo y moneda", "para": "poder calcular medianas", "criterios": ["Implementa parsear_salario en limpieza/normalizadores.py", "Pasan los 5 casos de tests/test_normalizadores.py", "Agrega al menos 3 casos de prueba con formatos reales del portal"]}, {"id": "HU-14", "squad": "A", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["A5"], "titulo": "Convertir la fecha de publicación", "como": "analista del cliente", "quiero": "fechas reales en formato AAAA-MM-DD", "para": "saber qué tan recientes son las ofertas", "criterios": ["Convierte 'Hoy', 'Hace N días' y 'dd/mm/aaaa'", "Recibe la fecha de hoy como parámetro para poder probarla", "Un test por cada formato"]}, {"id": "HU-12", "squad": "A", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["A6"], "titulo": "Scraping responsable", "como": "equipo de desarrollo", "quiero": "respetar las reglas del portal", "para": "no saturarlo ni ser bloqueados", "criterios": ["Lee robots.txt con urllib.robotparser y no descarga lo prohibido", "Pausa configurable entre peticiones (0.1 s por defecto, o el Crawl-delay si existe)", "User-Agent que identifica al proyecto", "Explica en el README por qué se hace cada cosa"]}, {"id": "BUG-02", "squad": "B", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["B1"], "titulo": "El lector de Universidad Andina toma mal los encabezados", "como": "analista del cliente", "quiero": "que la encuesta se cargue con las columnas correctas", "para": "no perder respuestas", "criterios": ["Pasan los 2 tests de tests/test_lector_encuestas.py", "Excluye la fila 'Total respuestas'", "Usa header= de pd.read_excel (no editar el Excel a mano)"]}, {"id": "HU-31", "squad": "B", "sprint": 1, "estado": "Por hacer", "pts": 3, "asignado": ["B2"], "titulo": "Lector del estudio Talentia (una hoja por ciudad)", "como": "analista del cliente", "quiero": "cargar el estudio de Talentia", "para": "tener más datos salariales", "criterios": ["Lee todas las hojas con sheet_name=None, menos Notas", "Agrega la columna ciudad con el nombre de la hoja", "Quita filas vacías y la fila TOTAL", "Renombra columnas al contrato"]}, {"id": "BUG-01", "squad": "B", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["B3"], "titulo": "normalizar_ciudad no cubre las variantes reales", "como": "analista del cliente", "quiero": "una sola forma de escribir cada ciudad", "para": "que los conteos por ciudad sean correctos", "criterios": ["Pasan los 10 casos de test_normalizar_ciudad", "Ignora tildes y mayúsculas", "Si no reconoce la ciudad, la devuelve en formato título y escribe un warning en el log"]}, {"id": "HU-33", "squad": "B", "sprint": 1, "estado": "Por hacer", "pts": 3, "asignado": ["B4"], "titulo": "Limpiar salarios y experiencia escritos como texto", "como": "analista del cliente", "quiero": "salarios y años de experiencia como números", "para": "poder sacar medianas", "criterios": ["'$5.200.000' pasa a 5200000 y '4,5 millones' a 4500000", "'3 años' pasa a 3", "Usa .str y pd.to_numeric(errors='coerce')", "Tests con al menos 6 casos"]}, {"id": "HU-34", "squad": "B", "sprint": 1, "estado": "Por hacer", "pts": 3, "asignado": ["B5"], "titulo": "Unificar nombres de skills con el catálogo", "como": "analista del cliente", "quiero": "que 'springboot', 'Spring' y 'spring-boot' cuenten como Spring Boot", "para": "que el ranking de skills sea correcto", "criterios": ["Lee data/referencia/catalogo_skills.xlsx y arma un diccionario sinónimo → nombre oficial", "normalizar_skills('java / spring') devuelve 'Java|Spring Boot'", "Vive en limpieza/ para que la use también el Squad A"]}, {"id": "HU-35", "squad": "B", "sprint": 1, "estado": "Por hacer", "pts": 3, "asignado": ["B6"], "titulo": "Limpiar la base de egresados", "como": "coordinador de empleabilidad", "quiero": "la base de egresados limpia", "para": "medir cuántos consiguen empleo", "criterios": ["'Sí', 'si', 'SI' pasan a True; 'No', 'no' a False; vacío y 'N/A' a vacío", "Fechas de grado en 5 formatos pasan a fecha (pd.to_datetime con format='mixed')", "Elimina duplicados exactos", "Guarda data/processed/egresados.csv"]}, {"id": "BUG-03", "squad": "C", "sprint": 1, "estado": "Por hacer", "pts": 1, "asignado": ["C1"], "titulo": "El reporte usa una ruta del PC del desarrollador anterior y cuenta mal", "como": "equipo de desarrollo", "quiero": "que el reporte corra en cualquier computador", "para": "poder automatizarlo", "criterios": ["Usa las rutas de config.py", "Pasa tests/test_reporte.py", "Separa las skills por | como dice el contrato"]}, {"id": "HU-50", "squad": "C", "sprint": 1, "estado": "Por hacer", "pts": 3, "asignado": ["C2"], "titulo": "Top de skills: general y por rol", "como": "estudiante", "quiero": "saber qué skills piden para cada cargo", "para": "decidir qué aprender", "criterios": ["Usa data/sample/ofertas_sample.csv", "str.split + explode + value_counts", "Columnas: skill, ofertas, pct_ofertas", "Versión por rol con groupby, 5 skills por rol", "Exporta top_skills.xlsx con to_excel"]}, {"id": "HU-51", "squad": "C", "sprint": 1, "estado": "Por hacer", "pts": 3, "asignado": ["C3"], "titulo": "Salario por rol y experiencia", "como": "estudiante", "quiero": "saber cuánto se gana en cada cargo según la experiencia", "para": "tener expectativas realistas", "criterios": ["Usa data/sample/encuestas_sample.csv", "Mediana, percentil 25 y 75 por rol con groupby().agg", "Rangos 0-1, 2-4 y 5+ años con pd.cut", "Tabla rol × rango con pivot_table, exportada con to_excel"]}, {"id": "HU-52", "squad": "C", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["C4"], "titulo": "Ofertas por ciudad y modalidad", "como": "estudiante", "quiero": "saber dónde están las ofertas y cuántas son remotas", "para": "saber si tengo que mudarme", "criterios": ["pd.crosstab de ciudad × modalidad con totales", "Porcentaje de ofertas remotas", "Exporta a Excel con to_excel"]}, {"id": "HU-53", "squad": "C", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["C5"], "titulo": "Tasa de empleabilidad por programa", "como": "director de programa", "quiero": "saber qué porcentaje de egresados de mi programa está empleado", "para": "compararme con otros programas", "criterios": ["Usa data/sample/egresados_sample.csv", "Egresados, empleados, tasa % y salario mediano por programa", "Ordenado de mayor a menor tasa", "Exporta a Excel con to_excel"]}, {"id": "HU-54", "squad": "C", "sprint": 1, "estado": "Por hacer", "pts": 3, "asignado": ["C6"], "titulo": "¿Qué skill paga más?", "como": "estudiante", "quiero": "saber qué skills están en las ofertas mejor pagadas", "para": "priorizar qué aprender", "criterios": ["Salario medio de cada oferta = (mínimo + máximo) / 2", "Mediana del salario por skill (explode + groupby)", "Solo skills con al menos 5 ofertas con salario", "Exporta a Excel con to_excel"]}, {"id": "HU-80", "squad": "D", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["D1"], "titulo": "Gráfico de skills más pedidas", "como": "coordinador de empleabilidad", "quiero": "un gráfico del top de skills", "para": "mostrarlo en el comité", "criterios": ["Barras horizontales con matplotlib, usando ofertas_sample.csv", "Título, nombre de los ejes y fuente", "Se guarda como PNG en reportes/"]}, {"id": "HU-81", "squad": "D", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["D2"], "titulo": "Gráfico de salarios por rol", "como": "coordinador de empleabilidad", "quiero": "ver cómo varían los salarios por rol", "para": "explicar los rangos a los estudiantes", "criterios": ["Boxplot con matplotlib usando encuestas_sample.csv", "Roles ordenados por mediana", "Eje en millones de pesos", "PNG en reportes/"]}, {"id": "HU-82", "squad": "D", "sprint": 1, "estado": "Por hacer", "pts": 3, "asignado": ["D3"], "titulo": "Reporte semanal en Excel con varias hojas", "como": "coordinador de empleabilidad", "quiero": "un solo Excel con todo", "para": "no buscar en varios archivos", "criterios": ["pd.ExcelWriter + to_excel, una hoja por tabla", "Hojas mínimas: Resumen, Top skills, Salarios, Datos", "El nombre del archivo lleva la fecha: reporte_semanal_AAAA-MM-DD.xlsx"]}, {"id": "HU-83", "squad": "D", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["D4"], "titulo": "Logging para todo el proyecto", "como": "operador del sistema", "quiero": "que el programa deje registro de lo que hace", "para": "saber qué pasó cuando algo falla", "criterios": ["logging.basicConfig en un solo lugar, a consola y a logs/talentscope_AAAA-MM-DD.log", "Reemplaza los print del código heredado", "Guía corta en el README de cómo usar log.info / log.warning"]}, {"id": "HU-84", "squad": "D", "sprint": 1, "estado": "Por hacer", "pts": 1, "asignado": ["D5"], "titulo": "Carpeta de reportes por fecha", "como": "coordinador de empleabilidad", "quiero": "los reportes de cada semana en su propia carpeta", "para": "no sobrescribir los anteriores", "criterios": ["Función que crea y devuelve reportes/AAAA-MM-DD/ con pathlib", "Todos los módulos guardan ahí sus archivos", "Test con tmp_path"]}, {"id": "HU-85", "squad": "D", "sprint": 1, "estado": "Por hacer", "pts": 2, "asignado": ["D6"], "titulo": "Instalación paso a paso probada", "como": "nuevo integrante del equipo", "quiero": "instalar el proyecto sin ayuda", "para": "empezar a trabajar el mismo día", "criterios": ["Script instalar.bat (y instalar.sh) que crea el venv e instala dependencias", "README probado por un compañero de otro squad en su computador", "Sección de errores comunes"]}, {"id": "HU-15", "squad": "A", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["A1"], "titulo": "Entregar ofertas.csv y ofertas.xlsx según el contrato", "como": "Squad C", "quiero": "recibir las ofertas con las columnas acordadas", "para": "calcular indicadores sin limpiar de nuevo", "criterios": ["Aplica normalizar_ciudad, parsear_salario y la fecha de HU-14", "Columnas y orden de docs/CONTRATO_DATOS.md", "Guarda data/processed/ofertas.csv y ofertas.xlsx (to_excel)"]}, {"id": "HU-16", "squad": "A", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["A2"], "titulo": "Segunda fuente: Fake Jobs de Real Python", "como": "analista del cliente", "quiero": "ofertas de una segunda fuente", "para": "no depender de un solo portal", "criterios": ["Scrapea https://realpython.github.io/fake-jobs/ (sitio hecho para practicar)", "Columnas del contrato con fuente='fakejobs'; lo que no exista queda vacío", "Exporta fakejobs.xlsx con to_excel"]}, {"id": "HU-17", "squad": "A", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["A3"], "titulo": "Separar rol y nivel del título", "como": "Squad C", "quiero": "el rol y el nivel en columnas separadas", "para": "analizar por cargo y por seniority", "criterios": ["'Desarrollador Python Semi Senior' → rol 'Desarrollador Python', nivel 'Semi Senior'", "Cuidado: 'Semi Senior' contiene 'Senior'", "Tests parametrizados"]}, {"id": "HU-18", "squad": "A", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["A4"], "titulo": "Tests del scraper sin internet", "como": "equipo de desarrollo", "quiero": "probar el scraper con HTML guardado", "para": "que los tests no dependan de la red", "criterios": ["Fixtures de listado, detalle y última página", "monkeypatch reemplaza la descarga", "Prueba que la paginación se detiene"]}, {"id": "HU-19", "squad": "A", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["A5"], "titulo": "Histórico de ofertas sin duplicados", "como": "analista del cliente", "quiero": "acumular las ofertas de cada semana", "para": "ver tendencias", "criterios": ["Lee el histórico, pd.concat con lo nuevo y drop_duplicates por id_oferta", "Solo visita el detalle de ofertas que no conoce (menos peticiones)", "Guarda ofertas_historico.csv"]}, {"id": "HU-20", "squad": "A", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["A6"], "titulo": "Bitácora de cada corrida del scraper", "como": "operador del sistema", "quiero": "un registro de cada corrida", "para": "saber si funcionó sin leer el código", "criterios": ["Una fila por corrida: fecha, páginas, ofertas, peticiones, errores, segundos", "Se agrega al final de scraping_corridas.xlsx (leer, concat, to_excel)"]}, {"id": "HU-40", "squad": "B", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["B1"], "titulo": "Consolidado de encuestas", "como": "Squad C", "quiero": "un solo archivo con todas las encuestas", "para": "analizar salarios sin importar quién las envió", "criterios": ["pd.concat de Uniandina y Talentia ya limpias", "id_registro único ENC-0001, ENC-0002...", "Guarda encuestas.csv y encuestas.xlsx (to_excel)"]}, {"id": "HU-41", "squad": "B", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["B2"], "titulo": "Egresados en Excel con una hoja por programa", "como": "director de programa", "quiero": "ver solo los egresados de mi programa", "para": "hacer seguimiento", "criterios": ["pd.ExcelWriter: hoja 'Todos' + una hoja por programa con un for sobre groupby", "Nombres de hoja de máximo 31 caracteres"]}, {"id": "HU-38", "squad": "B", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["B3"], "titulo": "Separar filas válidas de rechazadas", "como": "coordinador de empleabilidad", "quiero": "saber qué respuestas se descartaron y por qué", "para": "pedir correcciones a los aliados", "criterios": ["Reglas: sin rol, sin salario, salario fuera de 1 a 60 millones, duplicado", "Las rechazadas van a rechazados.xlsx con una columna motivo", "Encuentra los 8 errores que traen los archivos actuales"]}, {"id": "HU-36", "squad": "B", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["B4"], "titulo": "Reporte de calidad por aliado", "como": "coordinador de empleabilidad", "quiero": "saber qué tan buenos son los datos de cada aliado", "para": "mostrárselo en la reunión con ellos", "criterios": ["Por fuente: filas leídas, rechazadas, duplicados y % de vacíos por columna", "Exporta calidad_datos.xlsx con to_excel"]}, {"id": "HU-39", "squad": "B", "sprint": 2, "estado": "Por hacer", "pts": 5, "asignado": ["B5", "B6"], "titulo": "Capacidad reservada para requerimientos del cliente", "como": "", "quiero": "", "para": "", "criterios": [], "reservada": true}, {"id": "HU-55", "squad": "C", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["C1"], "titulo": "Brecha entre lo que se enseña y lo que se pide", "como": "director de programa", "quiero": "saber qué skills pide el mercado que mi programa no enseña", "para": "actualizar el plan de estudios", "criterios": ["Lee data/referencia/plan_estudios_programas.xlsx", "Faltantes: skills en más del 10% de ofertas que el programa no enseña (resta de conjuntos)", "Poco demandadas: enseñadas pero en menos del 5%", "Exporta brecha.xlsx"]}, {"id": "HU-56", "squad": "C", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["C2"], "titulo": "Salario ofrecido vs salario reportado", "como": "estudiante", "quiero": "comparar lo que ofrecen las empresas con lo que ganan los egresados", "para": "saber si negociar", "criterios": ["Mediana por rol en ofertas y en encuestas, unidas con merge", "Diferencia en %", "Solo roles con al menos 5 datos en cada lado"]}, {"id": "HU-57", "squad": "C", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["C3"], "titulo": "Skills que se piden juntas", "como": "estudiante", "quiero": "saber qué aprender después de lo que ya sé", "para": "armar un perfil coherente", "criterios": ["Pares de skills con itertools.combinations", "Top 15 pares más frecuentes", "Exporta a Excel"]}, {"id": "HU-58", "squad": "C", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["C4"], "titulo": "¿Qué piden para un cargo junior?", "como": "estudiante a punto de graduarse", "quiero": "saber qué piden en ofertas junior", "para": "prepararme para mi primer empleo", "criterios": ["Filtra nivel == 'Junior'", "Top 10 skills y roles con más vacantes junior", "Exporta perfil_junior.xlsx con dos hojas"]}, {"id": "HU-59", "squad": "C", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["C5"], "titulo": "Salario por ciudad y modalidad", "como": "estudiante", "quiero": "comparar salarios entre ciudades y trabajo remoto", "para": "decidir dónde buscar", "criterios": ["Mediana por ciudad y por modalidad", "Convierte USD a COP antes de comparar", "Exporta a Excel"]}, {"id": "HU-60", "squad": "C", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["C6"], "titulo": "Libro de indicadores", "como": "Squad D", "quiero": "todos los indicadores en un solo Excel", "para": "armar los reportes desde un solo lugar", "criterios": ["Función calcular_todo() que devuelve un diccionario {nombre de hoja: DataFrame}", "indicadores.xlsx con una hoja por indicador (ExcelWriter + to_excel)"]}, {"id": "HU-86", "squad": "D", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["D1"], "titulo": "Reporte semanal en HTML", "como": "coordinador de empleabilidad", "quiero": "un reporte que se abra en el navegador", "para": "enviarlo por correo", "criterios": ["Tablas con DataFrame.to_html", "Gráficos incrustados en base64 (un solo archivo)", "Se guarda en la carpeta del día"]}, {"id": "HU-87", "squad": "D", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["D2"], "titulo": "Hallazgos en texto", "como": "coordinador de empleabilidad", "quiero": "frases que resuman la semana", "para": "no tener que interpretar las tablas", "criterios": ["5 frases armadas con f-strings a partir de los indicadores", "Ejemplo: 'La skill más pedida es Git: aparece en el 31% de las ofertas'", "Van en la hoja Resumen y en el HTML"]}, {"id": "HU-88", "squad": "D", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["D3"], "titulo": "Comando 'todo' del pipeline", "como": "operador del sistema", "quiero": "correr todo con un comando", "para": "no ejecutar cada etapa a mano", "criterios": ["python -m talentscope.pipeline todo corre scraping, excel y reporte en orden", "Si una etapa falla, se registra y las demás siguen", "Termina con código 1 si algo falló"]}, {"id": "HU-89", "squad": "D", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["D4"], "titulo": "Bitácora de corridas del pipeline", "como": "operador del sistema", "quiero": "un historial de todas las corridas", "para": "saber cuándo falló algo", "criterios": ["corridas.xlsx: inicio, etapa, estado, segundos, detalle del error", "Cada corrida agrega filas (leer + concat + to_excel)"]}, {"id": "HU-90", "squad": "D", "sprint": 2, "estado": "Por hacer", "pts": 3, "asignado": ["D5"], "titulo": "Ficha por cargo", "como": "estudiante", "quiero": "un Excel por cargo con lo esencial", "para": "tener todo de ese cargo en un archivo", "criterios": ["Un archivo por rol con un for sobre groupby('rol')", "Hojas: Resumen (ofertas, salario mediano, % remoto, ciudad principal), Skills, Niveles, Ofertas", "Nombres de archivo sin tildes ni espacios"]}, {"id": "HU-91", "squad": "D", "sprint": 2, "estado": "Por hacer", "pts": 2, "asignado": ["D6"], "titulo": "Gráfico de empleabilidad por programa", "como": "director de programa", "quiero": "ver la empleabilidad de los programas en un gráfico", "para": "presentarlo al consejo académico", "criterios": ["Barras horizontales de 0 a 100%", "Título y fuente", "PNG en la carpeta del día"]}, {"id": "HU-23", "squad": "A", "sprint": 3, "estado": "Por hacer", "pts": 5, "asignado": ["A1", "A2"], "titulo": "Capacidad reservada para requerimientos del cliente", "como": "", "quiero": "", "para": "", "criterios": [], "reservada": true}, {"id": "HU-24", "squad": "A", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["A3"], "titulo": "Alerta cuando no llegan ofertas", "como": "operador del sistema", "quiero": "enterarme cuando el scraper deja de encontrar datos", "para": "reaccionar el mismo día", "criterios": ["Si una página trae 0 ofertas, log.error con la URL", "Escribe alertas/AAAA-MM-DD.txt", "El proceso termina con código 1"]}, {"id": "HU-25", "squad": "A", "sprint": 3, "estado": "Por hacer", "pts": 3, "asignado": ["A4"], "titulo": "Detectar skills en la descripción", "como": "analista del cliente", "quiero": "encontrar skills mencionadas en el texto de la oferta", "para": "completar las que no traen lista", "criterios": ["Usa el catálogo de HU-34", "Busca palabras completas con re y \\b", "Une skills de la lista y de la descripción sin repetir"]}, {"id": "HU-26", "squad": "A", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["A5"], "titulo": "Completitud de los datos web", "como": "coordinador de empleabilidad", "quiero": "saber qué tan completos vienen los datos del portal", "para": "confiar en los reportes", "criterios": ["% de ofertas con salario, con skills y con ciudad reconocida", "Una fila por corrida en completitud_web.xlsx"]}, {"id": "HU-27", "squad": "A", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["A6"], "titulo": "Empresas que más publican", "como": "estudiante", "quiero": "una lista de empresas que están contratando", "para": "enviarles mi hoja de vida", "criterios": ["Por empresa: número de ofertas, roles, ciudades y cuántas son junior", "Ordenado por número de ofertas", "Exporta empresas.xlsx"]}, {"id": "HU-37", "squad": "B", "sprint": 3, "estado": "Por hacer", "pts": 3, "asignado": ["B1"], "titulo": "Procesar todos los Excel de una carpeta", "como": "analista del cliente", "quiero": "dejar los Excel en una carpeta y que se procesen solos", "para": "no pedirle nada al equipo técnico", "criterios": ["Recorre data/raw/excel con glob('*.xlsx')", "Elige el lector según el nombre del archivo", "Si un archivo falla, lo registra y sigue con los demás"]}, {"id": "HU-42", "squad": "B", "sprint": 3, "estado": "Por hacer", "pts": 3, "asignado": ["B2"], "titulo": "Encontrar la fila de encabezados sola", "como": "equipo de desarrollo", "quiero": "que el lector encuentre dónde empiezan los datos", "para": "soportar archivos con títulos arriba", "criterios": ["Lee las primeras 10 filas con header=None", "Elige la fila que más coincide con las columnas esperadas", "Funciona para todos los aliados recibidos hasta la fecha"]}, {"id": "HU-43", "squad": "B", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["B3"], "titulo": "Tests con Excel creados con to_excel", "como": "equipo de desarrollo", "quiero": "probar los lectores con archivos pequeños", "para": "probar casos raros fácilmente", "criterios": ["Cada test crea su Excel con DataFrame.to_excel en tmp_path", "Casos: fila TOTAL, columna faltante, hoja vacía, encabezado en la fila 5"]}, {"id": "HU-44", "squad": "B", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["B4"], "titulo": "Plantilla Excel para los aliados", "como": "coordinador de empleabilidad", "quiero": "mandarles a los aliados una plantilla", "para": "recibir datos limpios desde el origen", "criterios": ["Generada con to_excel: hoja Datos con las columnas del contrato y 2 filas de ejemplo", "Hoja Instrucciones con qué va en cada columna", "plantilla_aliados.xlsx en data/referencia/"]}, {"id": "HU-45", "squad": "B", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["B5"], "titulo": "TRM desde un Excel", "como": "analista del cliente", "quiero": "actualizar la tasa del dólar sin tocar el código", "para": "convertir con el valor del mes", "criterios": ["data/referencia/trm.xlsx con columnas mes y valor", "Usa la TRM del mes más reciente", "Si el archivo no existe, usa la de config.py y avisa en el log"]}, {"id": "HU-46", "squad": "B", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["B6"], "titulo": "Diccionario de datos automático", "como": "nuevo integrante del equipo", "quiero": "saber qué contiene cada columna de los archivos finales", "para": "usarlos sin preguntar", "criterios": ["Por archivo y columna: tipo, % vacíos, valores de ejemplo", "Exporta diccionario_datos.xlsx con una hoja por archivo"]}, {"id": "HU-61", "squad": "C", "sprint": 3, "estado": "Por hacer", "pts": 3, "asignado": ["C1"], "titulo": "Skills que suben y bajan", "como": "coordinador de empleabilidad", "quiero": "ver qué skills ganan demanda", "para": "anticipar cambios", "criterios": ["Compara las dos últimas fechas del histórico", "Variación absoluta por skill", "Exporta tendencia.xlsx"]}, {"id": "HU-62", "squad": "C", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["C2"], "titulo": "Top 5 de skills recomendadas por programa", "como": "director de programa", "quiero": "una lista corta de qué agregar al programa", "para": "tomar decisiones rápido", "criterios": ["A partir de la brecha de HU-55", "5 skills por programa ordenadas por demanda", "Exporta recomendadas.xlsx"]}, {"id": "HU-63", "squad": "C", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["C3"], "titulo": "Empresas que contratan juniors", "como": "estudiante a punto de graduarse", "quiero": "saber qué empresas abren vacantes junior", "para": "enfocar mi búsqueda", "criterios": ["Por empresa: vacantes junior, roles y ciudades", "Exporta a Excel"]}, {"id": "HU-64", "squad": "C", "sprint": 3, "estado": "Por hacer", "pts": 3, "asignado": ["C4"], "titulo": "Tests de los indicadores", "como": "equipo de desarrollo", "quiero": "probar que los indicadores dan lo correcto", "para": "confiar en los números del cliente", "criterios": ["DataFrames pequeños hechos a mano con resultados calculados en papel", "Un test por indicador"]}, {"id": "HU-65", "squad": "C", "sprint": 3, "estado": "Por hacer", "pts": 3, "asignado": ["C5"], "titulo": "API Spring Boot: top de skills", "como": "desarrollador del portal del cliente", "quiero": "consultar el top de skills por HTTP", "para": "mostrarlo en la web de la universidad", "criterios": ["Proyecto Spring Boot en api/ (Spring Web)", "GET /api/skills/top?n=10 lee la tabla top_skills de data/processed/talentscope.db", "Respuesta según api/README.md"]}, {"id": "HU-66", "squad": "C", "sprint": 3, "estado": "Por hacer", "pts": 3, "asignado": ["C6"], "titulo": "API Spring Boot: salarios por rol", "como": "desarrollador del portal del cliente", "quiero": "consultar salarios por rol", "para": "mostrar rangos salariales", "criterios": ["GET /api/salarios?rol= lee la tabla salarios_por_rol", "404 con mensaje si el rol no existe", "Test con MockMvc"]}, {"id": "HU-92", "squad": "D", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["D1"], "titulo": "Ejecución programada", "como": "operador del sistema", "quiero": "que el pipeline corra solo cada mañana", "para": "no depender de que alguien lo lance", "criterios": ["ejecutar_pipeline.bat que activa el venv y corre 'todo'", "Programado con schtasks (o cron en Linux)", "Evidencia de dos corridas automáticas en corridas.xlsx"]}, {"id": "HU-93", "squad": "D", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["D2"], "titulo": "Archivar reportes viejos", "como": "operador del sistema", "quiero": "que no se acumulen reportes para siempre", "para": "no llenar el disco", "criterios": ["Carpetas de reportes de más de 8 semanas se comprimen en reportes/archivo/ (shutil.make_archive)", "Se registra en el log qué se archivó"]}, {"id": "HU-94", "squad": "D", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["D3"], "titulo": "Guardar los resultados en SQLite", "como": "Squad C (API)", "quiero": "los resultados en una base de datos", "para": "que la API de Spring Boot los lea", "criterios": ["DataFrame.to_sql en data/processed/talentscope.db", "Tablas: ofertas, encuestas, egresados, top_skills, salarios_por_rol, brecha", "Consulta de ejemplo en el README"]}, {"id": "HU-95", "squad": "D", "sprint": 3, "estado": "Por hacer", "pts": 3, "asignado": ["D4"], "titulo": "Mi ruta: reporte personal para un estudiante", "como": "estudiante", "quiero": "decir mi programa y el cargo que quiero y recibir un Excel", "para": "saber qué me falta aprender", "criterios": ["python -m talentscope.pipeline mi-ruta --programa \"...\" --rol \"...\"", "Excel con las skills del rol y si las ve o no en su programa", "Incluye salario mediano del rol", "Mensaje claro si el programa o el rol no existen"]}, {"id": "HU-96", "squad": "D", "sprint": 3, "estado": "Por hacer", "pts": 2, "asignado": ["D5"], "titulo": "Índice de reportes", "como": "coordinador de empleabilidad", "quiero": "una página con todos los reportes de cada semana", "para": "encontrarlos fácil", "criterios": ["reportes/index.html con enlaces a cada carpeta y archivo", "Se regenera en cada corrida"]}, {"id": "HU-97", "squad": "D", "sprint": 3, "estado": "Por hacer", "pts": 3, "asignado": ["D6"], "titulo": "Test del pipeline completo", "como": "equipo de desarrollo", "quiero": "probar el pipeline de punta a punta", "para": "detectar si un squad rompe a otro", "criterios": ["Corre las etapas excel y reporte con los datos de data/sample", "Verifica que se crean los archivos esperados", "Usa tmp_path para no ensuciar el proyecto"]}, {"id": "HU-70", "squad": "Todos", "sprint": 4, "estado": "Por hacer", "pts": 5, "asignado": ["A1", "B1", "C1", "D1"], "titulo": "Integración de punta a punta", "como": "operador del sistema", "quiero": "que todo funcione junto con datos reales", "para": "entregar el producto", "criterios": ["python -m talentscope.pipeline todo funciona en un computador limpio", "Si una etapa falla, las demás usan los últimos datos buenos", "Resultado igual o mejor que la versión de referencia mostrada en el kickoff"]}, {"id": "HU-71", "squad": "Todos", "sprint": 4, "estado": "Por hacer", "pts": 3, "asignado": ["A2", "A3", "B2", "B3", "C2", "C3", "D2", "D3"], "titulo": "QA cruzado entre squads", "como": "cliente", "quiero": "que otro equipo pruebe cada módulo", "para": "recibir un producto sin sorpresas", "criterios": ["A prueba a B, B a C, C a D y D a A", "Cada bug se registra con pasos para reproducirlo", "Los bugs críticos se corrigen antes de la demo"]}, {"id": "HU-72", "squad": "Todos", "sprint": 4, "estado": "Por hacer", "pts": 2, "asignado": ["A4", "B4", "C4", "D4"], "titulo": "Manual de operación", "como": "nuevo integrante del equipo", "quiero": "operar el sistema siguiendo un documento", "para": "no depender de quien lo construyó", "criterios": ["Instalación desde cero", "Cómo agregar un aliado nuevo y qué hacer si el portal cambia", "Problemas frecuentes y solución"]}, {"id": "HU-73", "squad": "Todos", "sprint": 4, "estado": "Por hacer", "pts": 3, "asignado": ["A5", "B5", "C5", "D5"], "titulo": "Informe final y demo al cliente", "como": "cliente", "quiero": "una presentación con los hallazgos", "para": "decidir cambios en los programas", "criterios": ["Responde las 3 preguntas del cliente con datos", "Demo en vivo del pipeline", "Máximo 15 minutos"]}, {"id": "HU-74", "squad": "Todos", "sprint": 4, "estado": "Por hacer", "pts": 2, "asignado": ["A6", "B6", "C6", "D6"], "titulo": "Limpieza final del código", "como": "equipo de desarrollo", "quiero": "entregar un código ordenado", "para": "que otro equipo lo pueda mantener", "criterios": ["Sin print, sin rutas quemadas, sin código comentado", "pytest completo en verde", "Docstring en cada función pública"]}]}</script>
+<script>
+// Escribe aquí los nombres reales: "A1": "Laura Gómez", ...
+const INTEGRANTES = {};
+const RUBRICA = [["Entrega de la HU", 40], ["Calidad de código y tests", 25], ["Prácticas ágiles", 20], ["Demo y comunicación", 15]];
+
+const D = JSON.parse(document.getElementById("backlog-data").textContent);
+const CODIGOS = ["A", "B", "C", "D"].flatMap(s => [1, 2, 3, 4, 5, 6].map(i => s + i));
+const SPRINTS = D.sprints.filter(s => s.n > 0);
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const fmt = iso => new Date(iso + "T12:00:00").toLocaleDateString("es-CO", {day: "numeric", month: "short"});
+const nombre = c => INTEGRANTES[c] ? `${c} · ${INTEGRANTES[c]}` : c;
+const esSM = (c, n) => Number(c[1]) === 7 - n;   // S1→6, S2→5, S3→4, S4→3
+
+const hoy = new Date().toISOString().slice(0, 10);
+const actual = D.sprints.find(s => hoy >= s.inicio && hoy <= s.fin);
+const huDe = (c, n) => D.hu.filter(h => h.sprint === n && h.asignado.includes(c));
+
+$("status").textContent = actual
+  ? `${actual.nombre} en curso · ${fmt(actual.inicio)} – ${fmt(actual.fin)}`
+  : hoy < SPRINTS[0].inicio ? `El proyecto arranca el ${fmt(SPRINTS[0].inicio)}` : "Proyecto finalizado";
+
+$("strip").innerHTML = D.sprints.map(s => {
+  const cls = actual && s.n === actual.n ? "now" : s.fin < hoy ? "past" : "";
+  return `<div class="sp ${cls}"><span class="n">Sprint ${s.n}</span><b>${esc(s.nombre.split("·")[1] || "Equipo anterior")}</b>
+    <span class="d">${fmt(s.inicio)} – ${fmt(s.fin)}</span><span class="d">${esc(s.objetivo)}</span></div>`;
+}).join("");
+
+// Mi asignación
+let elegido = null;
+try { elegido = localStorage.getItem("ts-integrante"); } catch (e) {}
+if (!CODIGOS.includes(elegido)) elegido = "A1";
+function pintarMio() {
+  $("picker").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.c === elegido));
+  $("mine").innerHTML = SPRINTS.map(s => {
+    const hus = huDe(elegido, s.n);
+    const now = actual && actual.n === s.n ? "now" : "";
+    return `<div class="mcard ${now}"><span class="eyebrow">Sprint ${s.n} · ${fmt(s.inicio)}</span>
+      ${esSM(elegido, s.n) ? '<span><span class="tag sm">Scrum Master</span></span>' : ""}
+      ${hus.map(h => `<div><span class="tag sq-${h.squad}">${h.id}</span> <b>${esc(h.titulo)}</b></div>
+        ${h.reservada ? "" : `<ul>${h.criterios.slice(0, 3).map(c => `<li>${esc(c)}</li>`).join("")}</ul>`}`).join("")}
+    </div>`;
+  }).join("");
+}
+$("picker").innerHTML = CODIGOS.map(c => `<button type="button" data-c="${c}">${esc(nombre(c))}</button>`).join("");
+$("picker").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  elegido = b.dataset.c; try { localStorage.setItem("ts-integrante", elegido); } catch (err) {}
+  pintarMio();
+});
+pintarMio();
+
+// Matriz
+$("matrix").innerHTML = `<thead><tr><th>Integrante</th>${SPRINTS.map(s =>
+    `<th>Sprint ${s.n} · ${fmt(s.inicio)}–${fmt(s.fin)}</th>`).join("")}</tr></thead><tbody>${
+  CODIGOS.map(c => `<tr class="${c.endsWith("1") && c !== "A1" ? "sq-sep" : ""}"><th>${esc(nombre(c))}</th>${
+    SPRINTS.map(s => `<td class="${actual && actual.n === s.n ? "now" : ""}"><div class="cell">${
+      huDe(c, s.n).map(h => `<span><span class="tag sq-${h.squad}">${h.id}</span> ${esSM(c, s.n) ? '<span class="tag sm">SM</span>' : ""}</span>
+        <span class="${h.reservada ? "reserved" : ""}">${esc(h.titulo)}</span>`).join("")}</div></td>`).join("")}</tr>`).join("")
+}</tbody>`;
+
+// Backlog con filtros
+const filtro = {squad: "Todos", sprint: actual ? actual.n : 1};
+const opcionesSquad = [["Todos", "Todos los squads"], ["A", "A · Web"], ["B", "B · Excel"], ["C", "C · Análisis"], ["D", "D · Reportes"]];
+const opcionesSprint = [[-1, "Todos los sprints"], ...D.sprints.map(s => [s.n, `Sprint ${s.n}`])];
+function pintarFiltros() {
+  $("filters").innerHTML =
+    opcionesSquad.map(([v, t]) => `<button class="chip" data-k="squad" data-v="${v}" aria-pressed="${filtro.squad === v}">${t}</button>`).join("") +
+    '<span class="sep"></span>' +
+    opcionesSprint.map(([v, t]) => `<button class="chip" data-k="sprint" data-v="${v}" aria-pressed="${filtro.sprint === v}">${t}</button>`).join("");
+}
+function pintarHUs() {
+  const lista = D.hu.filter(h =>
+    (filtro.squad === "Todos" || h.squad === filtro.squad || h.squad === "Todos") &&
+    (filtro.sprint === -1 || h.sprint === filtro.sprint));
+  $("hus").innerHTML = lista.map(h => `<details class="hu ${h.estado === "Hecha" ? "done" : ""}">
+    <summary><span class="hu-meta"><span class="tag sq-${h.squad}">${h.id}</span><span class="tag pts">${h.pts} pts</span>
+      <span class="tag pts">Sprint ${h.sprint}</span><span class="tag pts">${esc(h.estado)}</span></span>
+      <h3 class="${h.reservada ? "reserved" : ""}">${esc(h.titulo)}</h3>
+      <span class="mono" style="color:var(--muted)">${h.asignado.length ? h.asignado.map(nombre).map(esc).join(", ") : "Equipo anterior"}</span></summary>
+    <div class="hu-body">${h.reservada
+      ? "<p>El cliente suele traer requerimientos a mitad de proyecto. Esta capacidad queda libre para eso.</p>"
+      : `<p class="story"><b>Como</b> ${esc(h.como)}, <b>quiero</b> ${esc(h.quiero)}, <b>para</b> ${esc(h.para)}.</p>
+         <div><b>Criterios de aceptación</b><ul>${h.criterios.map(c => `<li>${esc(c)}</li>`).join("")}</ul></div>`}</div>
+  </details>`).join("") || '<p class="lead">No hay HU con esos filtros.</p>';
+}
+$("filters").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  filtro[b.dataset.k] = b.dataset.k === "sprint" ? Number(b.dataset.v) : b.dataset.v;
+  pintarFiltros(); pintarHUs();
+});
+pintarFiltros(); pintarHUs();
+
+$("rubric").innerHTML = RUBRICA.map(([t, p]) =>
+  `<span>${t} · <b>${p}%</b></span><span class="track"><span class="fill" style="display:block;width:${p * 2.5}%"></span></span>`).join("");
+</script>

@@ -1,0 +1,956 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía técnica TalentScope</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: field manual. Sticky chapter index on the left, one long reading column on the right; code blocks are the "instrument". */
+:root{
+  --bg:#f3f6f5; --surface:#ffffff; --ink:#14231f; --muted:#56655f; --line:#d5dfdb;
+  --accent:#0f6b58; --accent-soft:#dcefe9; --marker:#f2c14e; --marker-soft:#fbefcc;
+  --warn:#a4361f; --warn-soft:#f8e3dd;
+  --code-bg:#1b2723; --code-ink:#e3ece8; --code-muted:#8fa39b; --tk-kw:#f2c14e; --tk-str:#9fd9b4; --tk-num:#f5a97f; --tk-fn:#8ec5ff; --tk-com:#7d918a;
+  --f-display:"Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1715; --surface:#16211e; --ink:#e3ece8; --muted:#97a8a1; --line:#2a3833;
+  --accent:#5cc4a8; --accent-soft:#183a32; --marker:#e9b949; --marker-soft:#3b3218;
+  --warn:#f09a82; --warn-soft:#3a201a;
+  --code-bg:#0a110f; --code-ink:#e3ece8; --code-muted:#8fa39b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1715; --surface:#16211e; --ink:#e3ece8; --muted:#97a8a1; --line:#2a3833;
+  --accent:#5cc4a8; --accent-soft:#183a32; --marker:#e9b949; --marker-soft:#3b3218;
+  --warn:#f09a82; --warn-soft:#3a201a;
+  --code-bg:#0a110f; --code-ink:#e3ece8; --code-muted:#8fa39b; color-scheme:dark}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65}
+.layout{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 80px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:48px}
+@media (max-width:900px){.layout{grid-template-columns:1fr;gap:24px}}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;max-height:calc(100vh - 40px);overflow:auto;font-size:14px}
+@media (max-width:900px){nav.toc{position:static;max-height:none}}
+nav.toc ol{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:2px}
+nav.toc a{display:grid;grid-template-columns:2.2em 1fr;color:var(--muted);text-decoration:none;padding:4px 8px;border-radius:6px}
+nav.toc a span{font-family:var(--f-mono);font-size:12px;padding-top:2px}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--accent-soft);color:var(--ink);outline:none}
+nav.toc details summary{cursor:pointer;font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+main{min-width:0;display:grid;gap:64px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(32px,5vw,48px)}
+h2{font-size:clamp(24px,3vw,30px)}
+h3{font-size:19px;margin-top:8px}
+p,ul,ol{margin:0}
+.prose{display:grid;gap:14px;max-width:72ch}
+.prose ul,.prose ol{padding-left:22px;display:grid;gap:4px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hero{display:grid;gap:16px;max-width:72ch}
+.hero p{font-size:18px;color:var(--muted)}
+section.ch{display:grid;gap:18px;scroll-margin-top:20px}
+.ch-head{display:grid;gap:8px;border-top:2px solid var(--ink);padding-top:14px}
+.ch-num{font-family:var(--f-mono);font-size:13px;color:var(--accent);font-weight:600}
+.hus{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.hu{font-family:var(--f-mono);font-size:12px;font-weight:600;background:var(--marker-soft);color:var(--ink);border:1px solid var(--marker);border-radius:4px;padding:1px 6px}
+:not(pre)>code{font-family:var(--f-mono);font-size:.86em;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+.code{position:relative;min-width:0;max-width:880px}
+.code .lang{position:absolute;top:8px;right:56px;font-family:var(--f-mono);font-size:11px;color:var(--code-muted);text-transform:uppercase;letter-spacing:.06em}
+.code button{position:absolute;top:6px;right:8px;font-family:var(--f-mono);font-size:11px;background:transparent;color:var(--code-muted);border:1px solid var(--code-muted);border-radius:4px;padding:2px 7px;cursor:pointer}
+.code button:hover,.code button:focus-visible{color:var(--code-ink);border-color:var(--code-ink);outline:none}
+pre{margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:18px 18px 16px;overflow-x:auto;font-family:var(--f-mono);font-size:13.5px;line-height:1.6;tab-size:4}
+pre code{font-family:inherit;background:none;padding:0}
+.token.comment{color:var(--tk-com);font-style:italic}
+.token.keyword,.token.boolean,.token.builtin,.token.important{color:var(--tk-kw)}
+.token.string,.token.triple-quoted-string,.token.char,.token.attr-value{color:var(--tk-str)}
+.token.number{color:var(--tk-num)}
+.token.function,.token.class-name,.token.decorator,.token.annotation,.token.tag{color:var(--tk-fn)}
+.token.operator,.token.punctuation{color:var(--code-muted)}
+.note,.pitfall,.practice{border-radius:10px;padding:14px 16px;display:grid;gap:8px;max-width:72ch}
+.note{background:var(--accent-soft)}
+.pitfall{background:var(--warn-soft)}
+.pitfall b:first-child{color:var(--warn)}
+.practice{background:var(--surface);border:1px dashed var(--accent)}
+.label{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.scroll{overflow-x:auto;max-width:880px}
+table{border-collapse:collapse;font-size:14px;min-width:520px;width:100%}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-weight:600}
+td code{white-space:nowrap}
+.map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:880px}
+@media (max-width:700px){.map{grid-template-columns:1fr}}
+.map div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:6px;align-content:start;min-width:0}
+.map ol{padding-left:20px;margin:0;font-size:14px}
+a{color:var(--accent)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+</style>
+
+<div class="layout">
+<nav class="toc" aria-label="Capítulos">
+  <details open><summary>Capítulos</summary>
+  <ol>
+    <li><a href="#mapa"><span>00</span>Mapa de la guía</a></li>
+    <li><a href="#entorno"><span>01</span>Entorno y proyecto</a></li>
+    <li><a href="#http"><span>02</span>HTTP con requests</a></li>
+    <li><a href="#bs4"><span>03</span>BeautifulSoup</a></li>
+    <li><a href="#etica"><span>04</span>Scraping responsable</a></li>
+    <li><a href="#regex"><span>05</span>Expresiones regulares</a></li>
+    <li><a href="#fechas"><span>06</span>Fechas</a></li>
+    <li><a href="#excel"><span>07</span>Leer Excel difíciles</a></li>
+    <li><a href="#limpieza"><span>08</span>Limpieza con pandas</a></li>
+    <li><a href="#transformar"><span>09</span>Unir y transformar</a></li>
+    <li><a href="#agregar"><span>10</span>Agrupar y resumir</a></li>
+    <li><a href="#validar"><span>11</span>Validar datos</a></li>
+    <li><a href="#sqlite"><span>12</span>Guardar en SQLite</a></li>
+    <li><a href="#graficos"><span>13</span>Gráficos</a></li>
+    <li><a href="#reporte-excel"><span>14</span>Exportar a Excel</a></li>
+    <li><a href="#reporte-html"><span>15</span>Reportes HTML</a></li>
+    <li><a href="#automatizar"><span>16</span>Automatizar</a></li>
+    <li><a href="#tests"><span>17</span>Tests con pytest</a></li>
+    <li><a href="#spring"><span>18</span>Puente con Spring Boot</a></li>
+    <li><a href="#git"><span>19</span>Flujo de trabajo Git</a></li>
+  </ol>
+  </details>
+</nav>
+
+<main>
+<header class="hero">
+  <span class="eyebrow">DataNexo · Proyecto TalentScope</span>
+  <h1>Guía técnica</h1>
+  <p>Todo lo que necesitas para trabajar en TalentScope: scraping, lectura de Excel, limpieza y análisis con pandas, reportes y automatización. Cada capítulo indica qué HU del backlog apoya.</p>
+  <p style="font-size:15px">Los ejemplos usan datos parecidos a los del proyecto (precios de una tienda, una librería, un inventario) a propósito: aprendes la técnica aquí y la aplicas tú en tu HU.</p>
+</header>
+
+<!-- 00 -->
+<section class="ch" id="mapa">
+  <div class="ch-head"><span class="ch-num">00</span><h2>Mapa de la guía</h2></div>
+  <div class="prose"><p>No tienes que leer todo de una vez. Empieza por el capítulo 01 y luego salta a los que pide tu squad.</p></div>
+  <div class="map">
+    <div><b>Squad A · Scraping</b><ol><li>02 HTTP con requests</li><li>03 BeautifulSoup</li><li>04 Scraping responsable</li><li>05 Expresiones regulares</li><li>06 Fechas</li><li>14 Exportar a Excel</li><li>17 Tests</li></ol></div>
+    <div><b>Squad B · Excel de aliados</b><ol><li>07 Leer Excel difíciles</li><li>08 Limpieza</li><li>09 Unir y transformar</li><li>11 Validar datos</li><li>14 Exportar a Excel</li><li>17 Tests</li></ol></div>
+    <div><b>Squad C · Análisis</b><ol><li>09 Unir y transformar</li><li>10 Agrupar y resumir</li><li>14 Exportar a Excel</li><li>12 SQLite</li><li>18 Spring Boot</li><li>17 Tests</li></ol></div>
+    <div><b>Squad D · Reportes y automatización</b><ol><li>13 Gráficos</li><li>14 Exportar a Excel</li><li>15 Reportes HTML</li><li>16 Automatizar</li><li>12 SQLite</li><li>17 Tests</li></ol></div>
+  </div>
+</section>
+
+<!-- 01 -->
+<section class="ch" id="entorno">
+  <div class="ch-head"><span class="ch-num">01</span><h2>Entorno y estructura del proyecto</h2>
+    <div class="hus">Para todos los squads</div></div>
+  <div class="prose">
+    <p>Cada proyecto Python vive en su propio <b>entorno virtual</b>: una carpeta <code>.venv</code> con su propio intérprete y sus librerías. Así lo que instalas para TalentScope no rompe otros proyectos, que es lo que le pasa hoy al Python del sistema de muchos computadores.</p>
+  </div>
+  <div class="code"><pre><code class="language-bash"># Windows (PowerShell)
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+pip install -e .          # instala el paquete talentscope en modo editable
+
+# Linux / Mac
+python3 -m venv .venv
+source .venv/bin/activate</code></pre></div>
+  <div class="prose">
+    <p>El código vive en <code>src/talentscope/</code>. Por eso los imports son absolutos y empiezan por el paquete:</p>
+  </div>
+  <div class="code"><pre><code class="language-python">from talentscope.config import DATA_RAW_EXCEL        # bien
+from talentscope.limpieza.normalizadores import normalizar_ciudad
+
+# from config import DATA_RAW_EXCEL                  # mal: solo funciona si ejecutas desde esa carpeta</code></pre></div>
+  <div class="prose"><p>Usa <code>pathlib.Path</code> para las rutas. Nunca escribas rutas absolutas de tu computador: ese es justamente el BUG-03.</p></div>
+  <div class="code"><pre><code class="language-python">from pathlib import Path
+
+RAIZ = Path(__file__).resolve().parents[2]      # sube dos carpetas desde este archivo
+archivo = RAIZ / "data" / "raw" / "excel" / "encuesta.xlsx"   # el operador / une rutas
+print(archivo.exists(), archivo.suffix, archivo.stem)
+
+for ruta in (RAIZ / "data" / "raw" / "excel").glob("*.xlsx"):  # todos los .xlsx
+    print(ruta.name)</code></pre></div>
+  <div class="pitfall"><b>Error frecuente</b><p><code>ModuleNotFoundError: No module named 'talentscope'</code> casi siempre significa que no activaste el entorno virtual o que no corriste <code>pip install -e .</code>.</p></div>
+</section>
+
+<!-- 02 -->
+<section class="ch" id="http">
+  <div class="ch-head"><span class="ch-num">02</span><h2>HTTP con requests</h2>
+    <div class="hus">Apoya <span class="hu">BUG-04</span><span class="hu">HU-10</span><span class="hu">HU-16</span></div></div>
+  <div class="prose">
+    <p>Hacer scraping es, primero, pedir páginas. Cuando el navegador abre una URL envía una petición <b>GET</b> y recibe una respuesta con un <b>código de estado</b>, unos <b>encabezados</b> y un <b>cuerpo</b> (el HTML). <code>requests</code> hace lo mismo desde Python.</p>
+  </div>
+  <div class="code"><pre><code class="language-python">import requests
+
+resp = requests.get(
+    "http://localhost:8000/ofertas/pagina-1.html",
+    headers={"User-Agent": "TalentScopeBot/0.3 (proyecto educativo)"},
+    timeout=10,                     # segundos. SIN esto, el programa puede esperar para siempre
+)
+print(resp.status_code)             # 200 = OK, 404 = no existe, 500 = error del servidor
+print(resp.headers["Content-Type"]) # text/html ... ¿dice charset?
+resp.raise_for_status()             # lanza excepción si el código es 4xx o 5xx
+html = resp.text</code></pre></div>
+  <h3>Codificación: por qué sale "MedellÃ­n"</h3>
+  <div class="prose">
+    <p><code>resp.text</code> convierte bytes en texto usando la codificación que <i>adivina</i> requests. Si el servidor no declara el <code>charset</code>, requests asume ISO-8859-1 y las tildes en UTF-8 salen dañadas. Revisa <code>resp.encoding</code> y <code>resp.apparent_encoding</code>, o fija la codificación antes de leer <code>.text</code>.</p>
+  </div>
+  <div class="code"><pre><code class="language-python">print(resp.encoding, resp.apparent_encoding)   # p. ej. ISO-8859-1  utf-8
+resp.encoding = "utf-8"                         # decide tú, antes de usar resp.text</code></pre></div>
+  <h3>Sesiones y reintentos</h3>
+  <div class="prose"><p>Una <code>Session</code> reutiliza la conexión (más rápido) y permite configurar reintentos automáticos con espera creciente (<i>backoff</i>) para errores temporales.</p></div>
+  <div class="code"><pre><code class="language-python">from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+def crear_sesion() -> requests.Session:
+    reintentos = Retry(
+        total=3,
+        backoff_factor=1,                       # espera 1 s, 2 s, 4 s...
+        status_forcelist=[429, 500, 502, 503, 504],
+    )
+    sesion = requests.Session()
+    sesion.mount("http://", HTTPAdapter(max_retries=reintentos))
+    sesion.mount("https://", HTTPAdapter(max_retries=reintentos))
+    sesion.headers["User-Agent"] = "TalentScopeBot/0.3"
+    return sesion
+
+sesion = crear_sesion()
+try:
+    resp = sesion.get(url, timeout=10)
+    resp.raise_for_status()
+except requests.exceptions.Timeout:
+    ...   # el servidor tardó demasiado
+except requests.exceptions.RequestException as e:
+    ...   # cualquier otro problema de red o HTTP</code></pre></div>
+  <div class="pitfall"><b>Error frecuente</b><p>Capturar <code>except Exception: pass</code>. El scraper "funciona" pero devuelve cero ofertas y nadie se entera. Registra el error (capítulo 16) o lanza una excepción propia con un mensaje claro.</p></div>
+  <div class="practice"><span class="label">Practica</span><p>Con el portal corriendo (<code>python -m http.server 8000 --directory portal_mock</code>), pide <code>/ofertas/pagina-99.html</code>. ¿Qué código de estado devuelve? ¿Qué hace <code>raise_for_status()</code>?</p></div>
+</section>
+
+<!-- 03 -->
+<section class="ch" id="bs4">
+  <div class="ch-head"><span class="ch-num">03</span><h2>Extraer datos con BeautifulSoup</h2>
+    <div class="hus">Apoya <span class="hu">HU-10</span><span class="hu">HU-11</span><span class="hu">HU-16</span><span class="hu">HU-23</span></div></div>
+  <div class="prose">
+    <p>BeautifulSoup convierte el HTML en un árbol que puedes recorrer con <b>selectores CSS</b>, los mismos que usas en una hoja de estilos. Antes de escribir código, abre la página en el navegador, pulsa F12 e inspecciona el elemento que te interesa.</p>
+  </div>
+  <div class="code"><pre><code class="language-python">from bs4 import BeautifulSoup
+
+html = """
+&lt;div class="producto" data-sku="L-200"&gt;
+  &lt;h2&gt;&lt;a href="/item/L-200"&gt;Portátil 14"&lt;/a&gt;&lt;/h2&gt;
+  &lt;span class="precio"&gt;$ 2.899.000&lt;/span&gt;
+  &lt;ul class="specs"&gt;&lt;li&gt;16 GB&lt;/li&gt;&lt;li&gt;SSD 512&lt;/li&gt;&lt;/ul&gt;
+&lt;/div&gt;
+"""
+soup = BeautifulSoup(html, "html.parser")
+
+for prod in soup.select("div.producto"):          # select -> lista de elementos
+    enlace = prod.select_one("h2 a")               # select_one -> primer elemento o None
+    print(prod["data-sku"])                        # atributo del elemento
+    print(enlace.get_text(strip=True))             # texto sin espacios extra
+    print(enlace["href"])                          # /item/L-200
+    print([li.get_text(strip=True) for li in prod.select("ul.specs li")])</code></pre></div>
+  <div class="scroll"><table>
+    <thead><tr><th>Selector</th><th>Qué encuentra</th></tr></thead>
+    <tbody>
+      <tr><td><code>article</code></td><td>Todas las etiquetas &lt;article&gt;</td></tr>
+      <tr><td><code>.precio</code></td><td>Elementos con clase <i>precio</i></td></tr>
+      <tr><td><code>#ET-10450</code></td><td>El elemento con ese id</td></tr>
+      <tr><td><code>article.oferta h2 a</code></td><td>Enlaces dentro de un h2 dentro de un article con clase oferta</td></tr>
+      <tr><td><code>a[rel=next]</code></td><td>Enlaces cuyo atributo rel es "next"</td></tr>
+      <tr><td><code>ul.skills &gt; li</code></td><td>Hijos directos li de la lista</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Elementos que pueden faltar</h3>
+  <div class="prose"><p>Si <code>select_one</code> no encuentra nada devuelve <code>None</code>, y <code>None.get_text()</code> rompe el programa. Usa una función auxiliar:</p></div>
+  <div class="code"><pre><code class="language-python">def texto(padre, selector, defecto=None):
+    el = padre.select_one(selector)
+    return el.get_text(strip=True) if el else defecto</code></pre></div>
+  <h3>Paginación</h3>
+  <div class="prose"><p>El patrón es un ciclo: procesa la página, busca el enlace a la siguiente, conviértelo en URL absoluta con <code>urljoin</code> y repite hasta que no haya más. Siempre pon un límite para no quedar en un ciclo infinito.</p></div>
+  <div class="code"><pre><code class="language-python">from urllib.parse import urljoin
+
+url = "https://tienda.ejemplo/catalogo/1"
+visitadas = 0
+while url and visitadas &lt; MAX_PAGINAS:
+    soup = BeautifulSoup(descargar(url), "html.parser")
+    procesar(soup)
+    siguiente = soup.select_one("a.siguiente")
+    url = urljoin(url, siguiente["href"]) if siguiente else None
+    visitadas += 1
+
+urljoin("http://localhost:8000/ofertas/pagina-1.html", "pagina-2.html")
+# 'http://localhost:8000/ofertas/pagina-2.html'
+urljoin("http://localhost:8000/ofertas/pagina-1.html", "../oferta/ET-1.html")
+# 'http://localhost:8000/oferta/ET-1.html'</code></pre></div>
+  <div class="note"><b>Separa descargar de parsear</b><p>Una función recibe una URL y devuelve HTML; otra recibe HTML y devuelve diccionarios. La segunda se puede probar con archivos guardados sin internet (capítulo 17). Así está hecho <code>parsear_listado</code> en el código heredado.</p></div>
+  <div class="practice"><span class="label">Practica</span><p>Escribe una función que reciba el HTML de un detalle de oferta (<code>tests/fixtures/detalle_oferta.html</code>) y devuelva la lista de habilidades. Luego responde: ¿qué pasaría con tu selector si mañana el portal cambia <code>&lt;ul&gt;</code> por <code>&lt;div&gt;</code>?</p></div>
+</section>
+
+<!-- 04 -->
+<section class="ch" id="etica">
+  <div class="ch-head"><span class="ch-num">04</span><h2>Scraping responsable</h2>
+    <div class="hus">Apoya <span class="hu">HU-12</span><span class="hu">HU-16</span><span class="hu">HU-19</span></div></div>
+  <div class="prose">
+    <p>Un scraper hace peticiones al servidor de otra organización. Hacerlo mal puede saturarlo, violar sus términos o recolectar datos personales. Reglas del proyecto:</p>
+    <ul>
+      <li>Lee <code>robots.txt</code> y respeta lo que prohíbe y el <code>Crawl-delay</code>.</li>
+      <li>Identifícate con un <code>User-Agent</code> honesto.</li>
+      <li>Haz pausas entre peticiones y no pidas dos veces lo que ya tienes (HU-19).</li>
+      <li>Revisa los términos de uso del sitio. Si ofrece una API, úsala.</li>
+      <li>No recolectes datos personales (nombres, correos, teléfonos de personas).</li>
+      <li>En este curso solo scrapeamos el portal simulado y sitios hechos para practicar, como <a href="https://realpython.github.io/fake-jobs/">Fake Jobs de Real Python</a> o <a href="https://books.toscrape.com/">Books to Scrape</a>.</li>
+    </ul>
+  </div>
+  <div class="code"><pre><code class="language-python">import time
+from urllib.robotparser import RobotFileParser
+
+robots = RobotFileParser("http://localhost:8000/robots.txt")
+robots.read()
+agente = "TalentScopeBot"
+
+print(robots.can_fetch(agente, "http://localhost:8000/ofertas/pagina-1.html"))  # True
+print(robots.can_fetch(agente, "http://localhost:8000/admin/"))                 # False
+pausa = robots.crawl_delay(agente) or 1
+
+for url in urls:
+    if not robots.can_fetch(agente, url):
+        continue
+    html = descargar(url)
+    time.sleep(pausa)</code></pre></div>
+</section>
+
+<!-- 05 -->
+<section class="ch" id="regex">
+  <div class="ch-head"><span class="ch-num">05</span><h2>Expresiones regulares para texto sucio</h2>
+    <div class="hus">Apoya <span class="hu">HU-13</span><span class="hu">HU-14</span><span class="hu">HU-25</span><span class="hu">HU-33</span></div></div>
+  <div class="prose">
+    <p>Una expresión regular describe un patrón de texto. Sirve para sacar números de frases como "Desde $ 1.250.000" o detectar palabras en una descripción. Escríbelas con cadenas crudas <code>r"..."</code> para que las barras invertidas no se interpreten.</p>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>Patrón</th><th>Significa</th><th>Coincide en "Precio: $ 1.250.000 COP"</th></tr></thead>
+    <tbody>
+      <tr><td><code>\d</code></td><td>Un dígito</td><td>1, 2, 5...</td></tr>
+      <tr><td><code>\d+</code></td><td>Uno o más dígitos</td><td>1 · 250 · 000</td></tr>
+      <tr><td><code>[\d.]+</code></td><td>Dígitos o puntos, uno o más</td><td>1.250.000</td></tr>
+      <tr><td><code>\s*</code></td><td>Cero o más espacios</td><td></td></tr>
+      <tr><td><code>(COP|USD)</code></td><td>Grupo: una alternativa u otra</td><td>COP</td></tr>
+      <tr><td><code>\bJava\b</code></td><td>"Java" como palabra completa</td><td>no coincide en "JavaScript"</td></tr>
+      <tr><td><code>(?i)</code></td><td>Ignorar mayúsculas</td><td></td></tr>
+    </tbody>
+  </table></div>
+  <div class="code"><pre><code class="language-python">import re
+
+texto = "Oferta: entre $ 1.250.000 y 1.890.000 COP"
+numeros = re.findall(r"\d[\d.]*", texto)          # ['1.250.000', '1.890.000']
+valores = [int(n.replace(".", "")) for n in numeros]
+print(min(valores), max(valores))                  # 1250000 1890000
+
+m = re.search(r"(?P&lt;moneda&gt;COP|USD|EUR)", texto)    # grupo con nombre
+print(m.group("moneda") if m else None)            # COP
+
+# "2,5 kg" -> 2.5   (coma decimal)
+peso = float(re.search(r"(\d+(?:,\d+)?)\s*kg", "Peso: 2,5 kg").group(1).replace(",", "."))
+
+# Palabras completas, sin importar mayúsculas
+re.search(r"\bpython\b", "Buscamos dev PYTHON senior", flags=re.IGNORECASE)  # coincide</code></pre></div>
+  <div class="pitfall"><b>Error frecuente</b><p>En Colombia el punto separa miles (<code>4.500.000</code>) pero en dólares suele ser la coma (<code>1,500</code>). Antes de convertir, decide qué significa cada símbolo según la moneda. Escribe un test por cada formato real que encuentres.</p></div>
+  <div class="practice"><span class="label">Practica</span><p>Prueba tus patrones en <a href="https://regex101.com">regex101.com</a> (elige el modo Python). Recorre todas las páginas del portal y junta en un <code>set</code> los textos de salario distintos que existen: esa lista es tu mejor fuente de casos de prueba.</p></div>
+</section>
+
+<!-- 06 -->
+<section class="ch" id="fechas">
+  <div class="ch-head"><span class="ch-num">06</span><h2>Fechas</h2>
+    <div class="hus">Apoya <span class="hu">HU-14</span><span class="hu">HU-35</span><span class="hu">HU-61</span></div></div>
+  <div class="code"><pre><code class="language-python">from datetime import date, datetime, timedelta
+
+hoy = date(2026, 10, 15)
+hace_tres = hoy - timedelta(days=3)               # 2026-10-12
+datetime.strptime("08/09/2026", "%d/%m/%Y").date()  # parsear con formato explícito
+hoy.isoformat()                                    # '2026-10-15'</code></pre></div>
+  <div class="note"><b>Recibe "hoy" como parámetro</b><p>Una función que usa <code>date.today()</code> por dentro da resultados distintos cada día y es imposible de probar. Escribe <code>def a_fecha(texto, referencia: date)</code> y en el test pasa una fecha fija.</p></div>
+  <h3>Fechas en pandas</h3>
+  <div class="code"><pre><code class="language-python">import pandas as pd
+
+s = pd.Series(["15/06/2025", "2025-12-05", "junio 2025", None])
+pd.to_datetime(s, dayfirst=True, errors="coerce")      # lo que no entiende queda NaT
+pd.to_datetime(s, format="mixed", dayfirst=True, errors="coerce")  # pandas 2: formatos mezclados
+
+df["fecha"] = pd.to_datetime(df["fecha"], errors="coerce")
+no_convertidas = df[df["fecha"].isna()]                # repórtalas, no las borres en silencio
+df["mes"] = df["fecha"].dt.to_period("M")
+df["semana"] = df["fecha"].dt.isocalendar().week</code></pre></div>
+  <div class="pitfall"><b>Error frecuente</b><p>Sin <code>dayfirst=True</code>, "05/06/2025" se interpreta como 6 de mayo (formato de Estados Unidos). Siempre revisa unas filas convertidas a mano.</p></div>
+</section>
+
+<!-- 07 -->
+<section class="ch" id="excel">
+  <div class="ch-head"><span class="ch-num">07</span><h2>Leer Excel difíciles</h2>
+    <div class="hus">Apoya <span class="hu">BUG-02</span><span class="hu">HU-31</span><span class="hu">HU-37</span><span class="hu">HU-39</span><span class="hu">HU-42</span></div></div>
+  <div class="prose">
+    <p>Los Excel reales tienen títulos arriba, varias hojas, filas vacías, totales al final y columnas con nombres creativos. Antes de escribir el lector, <b>inspecciona</b>:</p>
+  </div>
+  <div class="code"><pre><code class="language-python">import pandas as pd
+
+ruta = "data/raw/excel/inventario_sucursales.xlsx"
+xls = pd.ExcelFile(ruta)
+print(xls.sheet_names)                                  # ['Norte', 'Sur', 'Notas']
+
+crudo = pd.read_excel(ruta, sheet_name="Norte", header=None, nrows=8)
+print(crudo)                                            # mira dónde empiezan los encabezados</code></pre></div>
+  <div class="scroll"><table>
+    <thead><tr><th>Parámetro</th><th>Para qué</th><th>Ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td><code>sheet_name</code></td><td>Hoja por nombre o posición. <code>None</code> lee todas y devuelve un diccionario</td><td><code>sheet_name="Norte"</code></td></tr>
+      <tr><td><code>header</code></td><td>Fila (desde 0) donde están los encabezados</td><td><code>header=2</code> = fila 3 de Excel</td></tr>
+      <tr><td><code>skiprows</code></td><td>Saltar filas al inicio</td><td><code>skiprows=2</code></td></tr>
+      <tr><td><code>usecols</code></td><td>Leer solo algunas columnas</td><td><code>usecols="A:E"</code></td></tr>
+      <tr><td><code>nrows</code></td><td>Leer solo N filas</td><td><code>nrows=100</code></td></tr>
+      <tr><td><code>dtype</code></td><td>Forzar tipos (evita perder ceros a la izquierda)</td><td><code>dtype={"Documento": str}</code></td></tr>
+    </tbody>
+  </table></div>
+  <h3>Varias hojas en un solo DataFrame</h3>
+  <div class="code"><pre><code class="language-python">hojas = pd.read_excel(ruta, sheet_name=None)            # {'Norte': df, 'Sur': df, 'Notas': df}
+partes = []
+for nombre, df in hojas.items():
+    if nombre == "Notas":
+        continue
+    partes.append(df.assign(sucursal=nombre))            # la hoja se vuelve una columna
+inventario = pd.concat(partes, ignore_index=True)</code></pre></div>
+  <h3>Encontrar la fila de encabezados automáticamente</h3>
+  <div class="code"><pre><code class="language-python">def fila_encabezado(ruta, hoja, esperadas: set[str], max_filas=10) -> int:
+    crudo = pd.read_excel(ruta, sheet_name=hoja, header=None, nrows=max_filas)
+    puntajes = crudo.apply(lambda fila: len(esperadas & set(fila.astype(str))), axis=1)
+    return int(puntajes.idxmax())</code></pre></div>
+  <div class="pitfall"><b>Error frecuente</b><p>Abrir el Excel en tu computador, "arreglarlo" a mano y guardarlo. El cliente mandará el mismo formato la próxima semana. El código debe manejar el archivo tal como llega.</p></div>
+  <div class="practice"><span class="label">Practica</span><p>Abre los tres Excel de <code>data/raw/excel/</code> con <code>header=None, nrows=8</code> y anota para cada uno: hojas, fila de encabezado, nombres de columnas y al menos tres problemas de calidad.</p></div>
+</section>
+
+<!-- 08 -->
+<section class="ch" id="limpieza">
+  <div class="ch-head"><span class="ch-num">08</span><h2>Limpieza con pandas</h2>
+    <div class="hus">Apoya <span class="hu">BUG-01</span><span class="hu">HU-17</span><span class="hu">HU-33</span><span class="hu">HU-34</span><span class="hu">HU-35</span></div></div>
+  <div class="code"><pre><code class="language-python">df = df.rename(columns={"Producto ": "producto", "Precio unit.": "precio"})
+df.columns = df.columns.str.strip().str.lower()          # quitar espacios y minúsculas
+
+df = df.dropna(how="all")                                # filas completamente vacías
+df = df[df["producto"].astype(str).str.upper() != "TOTAL"]  # filas de total
+df = df.drop_duplicates()
+
+# Texto -> número
+df["precio"] = (df["precio"].astype(str)
+                  .str.replace(r"[^\d]", "", regex=True)  # deja solo dígitos
+                  .pipe(pd.to_numeric, errors="coerce"))  # lo que no se pueda queda NaN
+
+# "3 unidades" -> 3
+df["cantidad"] = df["cantidad"].astype(str).str.extract(r"(\d+)")[0].astype("Int64")
+
+# Sí/No -> booleano
+mapa = {"si": True, "sí": True, "s": True, "no": False, "n": False}
+df["activo"] = df["activo"].astype(str).str.strip().str.lower().map(mapa)</code></pre></div>
+  <h3>Tildes y variantes</h3>
+  <div class="code"><pre><code class="language-python">import unicodedata
+
+def sin_tildes(texto: str) -> str:
+    descompuesto = unicodedata.normalize("NFD", texto)       # "á" -> "a" + tilde
+    return "".join(c for c in descompuesto if unicodedata.category(c) != "Mn")
+
+sin_tildes("Bucaramanga, Santander · Pereira · Popayán").lower()
+# 'bucaramanga, santander · pereira · popayan'</code></pre></div>
+  <h3>Diccionarios de sinónimos desde Excel</h3>
+  <div class="code"><pre><code class="language-python">cat = pd.read_excel("data/referencia/catalogo_marcas.xlsx")
+# columnas: "Marca canónica", "Sinónimos"   ->  "Hewlett Packard", "hp, HP Inc, H.P."
+sinonimos = {}
+for _, fila in cat.iterrows():
+    canon = fila["Marca canónica"]
+    sinonimos[canon.lower()] = canon
+    for s in str(fila["Sinónimos"]).split(","):
+        sinonimos[s.strip().lower()] = canon
+
+df["marca"] = df["marca"].str.strip().str.lower().map(sinonimos).fillna(df["marca"])</code></pre></div>
+  <div class="note"><b>Funciones pequeñas y puras</b><p>Una función que recibe un valor y devuelve un valor (<code>normalizar_ciudad("MEDELLIN")</code>) se prueba en una línea. Aplícala a la columna con <code>df["ciudad"].map(normalizar_ciudad)</code>.</p></div>
+  <div class="pitfall"><b>Error frecuente</b><p><code>SettingWithCopyWarning</code>. Aparece cuando filtras y luego modificas. Agrega <code>.copy()</code> después del filtro: <code>df = df[df["x"] &gt; 0].copy()</code>.</p></div>
+</section>
+
+<!-- 09 -->
+<section class="ch" id="transformar">
+  <div class="ch-head"><span class="ch-num">09</span><h2>Unir y transformar tablas</h2>
+    <div class="hus">Apoya <span class="hu">HU-39</span><span class="hu">HU-40</span><span class="hu">HU-50</span><span class="hu">HU-55</span><span class="hu">HU-56</span><span class="hu">HU-57</span></div></div>
+  <div class="scroll"><table>
+    <thead><tr><th>Operación</th><th>Cuándo</th></tr></thead>
+    <tbody>
+      <tr><td><code>pd.concat([a, b])</code></td><td>Apilar tablas con las mismas columnas (varias fuentes del mismo tipo)</td></tr>
+      <tr><td><code>a.merge(b, on="clave")</code></td><td>Cruzar tablas por una columna común (como un JOIN de SQL)</td></tr>
+      <tr><td><code>df.melt(...)</code></td><td>Pasar de formato ancho (una columna por mes) a largo</td></tr>
+      <tr><td><code>df.pivot_table(...)</code></td><td>Lo contrario: de largo a ancho, con agregación</td></tr>
+      <tr><td><code>df.explode("col")</code></td><td>Una fila por cada elemento de una lista</td></tr>
+    </tbody>
+  </table></div>
+  <div class="code"><pre><code class="language-python"># explode: una fila por cada categoría de un libro
+libros = pd.DataFrame({"titulo": ["A", "B"], "categorias": ["novela|drama", "ensayo"]})
+largo = libros.assign(categoria=libros["categorias"].str.split("|")).explode("categoria")
+#   titulo    categorias categoria
+#   A   novela|drama  novela
+#   A   novela|drama  drama
+#   B         ensayo  ensayo
+
+# melt: ventas en formato ancho -> largo
+ventas = pd.DataFrame({"producto": ["Café", "Té"], "Ene": [10, 4], "Feb": [12, 6]})
+ventas.melt(id_vars="producto", var_name="mes", value_name="unidades")
+
+# merge: precios de dos proveedores
+p1.merge(p2, on="producto", how="inner", suffixes=("_prov1", "_prov2"))
+# how="left" conserva todo p1; usa indicator=True para ver qué filas no cruzaron</code></pre></div>
+  <h3>Conjuntos para comparar listas</h3>
+  <div class="code"><pre><code class="language-python">ofrecemos = {"Café", "Té", "Chocolate"}
+nos_piden = {"Café", "Té verde", "Kombucha"}
+nos_piden - ofrecemos     # {'Té verde', 'Kombucha'}   -> demanda no cubierta
+ofrecemos - nos_piden     # {'Té', 'Chocolate'}        -> oferta poco pedida</code></pre></div>
+  <div class="pitfall"><b>Error frecuente</b><p>Un <code>merge</code> que multiplica filas. Si la clave se repite en ambas tablas obtienes todas las combinaciones. Compara <code>len()</code> antes y después, y usa <code>validate="many_to_one"</code> para que pandas avise.</p></div>
+</section>
+
+<!-- 10 -->
+<section class="ch" id="agregar">
+  <div class="ch-head"><span class="ch-num">10</span><h2>Agrupar y resumir</h2>
+    <div class="hus">Apoya <span class="hu">HU-50</span><span class="hu">HU-51</span><span class="hu">HU-53</span><span class="hu">HU-54</span><span class="hu">HU-58</span><span class="hu">HU-59</span></div></div>
+  <div class="code"><pre><code class="language-python">ventas = pd.read_csv("ventas.csv")       # columnas: producto, ciudad, precio, unidades, antiguedad_cliente
+
+# Conteo de valores
+ventas["producto"].value_counts().head(10)
+
+# Varias métricas por grupo
+resumen = (ventas.groupby("producto")
+                 .agg(n=("precio", "size"),
+                      mediana=("precio", "median"),
+                      p25=("precio", lambda s: s.quantile(.25)),
+                      p75=("precio", lambda s: s.quantile(.75)))
+                 .sort_values("mediana", ascending=False))
+
+# Rangos con pd.cut
+ventas["rango"] = pd.cut(ventas["antiguedad_cliente"], bins=[-1, 1, 4, 100],
+                         labels=["0-1 años", "2-4 años", "5+ años"])
+
+# Tabla dinámica: filas producto, columnas rango
+pd.pivot_table(ventas, index="producto", columns="rango", values="precio",
+               aggfunc="median", observed=True)
+
+# Porcentaje dentro de cada grupo
+conteo = ventas.groupby(["ciudad", "producto"]).size().rename("n").reset_index()
+conteo["pct_ciudad"] = conteo["n"] / conteo.groupby("ciudad")["n"].transform("sum") * 100</code></pre></div>
+  <div class="note"><b>¿Media o mediana?</b><p>Los salarios tienen pocos valores muy altos que inflan el promedio. La <b>mediana</b> representa mejor el "salario típico". Reporta también cuántos datos hay (<code>n</code>): una mediana con 3 datos no dice mucho.</p></div>
+</section>
+
+<!-- 11 -->
+<section class="ch" id="validar">
+  <div class="ch-head"><span class="ch-num">11</span><h2>Validar datos</h2>
+    <div class="hus">Apoya <span class="hu">HU-15</span><span class="hu">HU-36</span><span class="hu">HU-38</span><span class="hu">HU-46</span></div></div>
+  <div class="prose"><p>Validar es separar lo bueno de lo malo <b>y explicar por qué</b>. Nunca borres filas en silencio: guarda las rechazadas con su motivo para el reporte de calidad.</p></div>
+  <div class="code"><pre><code class="language-python">OBLIGATORIAS = ["producto", "precio", "ciudad"]
+
+def validar(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    faltan = set(OBLIGATORIAS) - set(df.columns)
+    if faltan:
+        raise ValueError(f"Faltan columnas obligatorias: {sorted(faltan)}")
+
+    motivos = pd.Series("", index=df.index)
+    motivos[df["producto"].isna()] += "producto vacío; "
+    motivos[~df["precio"].between(1_000, 50_000_000)] += "precio fuera de rango; "
+    motivos[df.duplicated()] += "duplicado; "
+
+    malas = df[motivos != ""].assign(motivo=motivos[motivos != ""])
+    buenas = df[motivos == ""]
+    return buenas, malas
+
+# Calidad por columna
+calidad = (df.isna().mean() * 100).round(1).rename("pct_nulos").to_frame()</code></pre></div>
+</section>
+
+<!-- 12 -->
+<section class="ch" id="sqlite">
+  <div class="ch-head"><span class="ch-num">12</span><h2>Guardar en SQLite</h2>
+    <div class="hus">Apoya <span class="hu">HU-19</span><span class="hu">HU-94</span><span class="hu">HU-65</span><span class="hu">HU-66</span></div></div>
+  <div class="prose"><p>SQLite es una base de datos en un solo archivo, sin servidor. Python la trae incluida y Spring Boot la puede leer con el driver <code>sqlite-jdbc</code>. Para revisarla visualmente usa <a href="https://sqlitebrowser.org/">DB Browser for SQLite</a>.</p></div>
+  <div class="code"><pre><code class="language-python">import sqlite3
+
+con = sqlite3.connect("data/processed/tienda.db")
+con.execute("""
+    CREATE TABLE IF NOT EXISTS productos (
+        sku TEXT NOT NULL,
+        fuente TEXT NOT NULL,
+        nombre TEXT,
+        precio INTEGER,
+        PRIMARY KEY (sku, fuente)
+    )
+""")
+
+# Insertar sin duplicar: si la clave ya existe, actualiza
+filas = df[["sku", "fuente", "nombre", "precio"]].itertuples(index=False, name=None)
+con.executemany("""
+    INSERT INTO productos (sku, fuente, nombre, precio) VALUES (?, ?, ?, ?)
+    ON CONFLICT(sku, fuente) DO UPDATE SET precio = excluded.precio
+""", filas)
+con.commit()
+
+# Leer con pandas
+pd.read_sql("SELECT fuente, COUNT(*) AS n FROM productos GROUP BY fuente", con)
+
+# Cargar una tabla completa (reemplaza)
+df.to_sql("inventario", con, if_exists="replace", index=False)
+con.close()</code></pre></div>
+  <div class="pitfall"><b>Error frecuente</b><p>Armar el SQL con f-strings: <code>f"... WHERE nombre = '{nombre}'"</code>. Se rompe con un apóstrofo y abre la puerta a inyección SQL. Usa siempre parámetros <code>?</code>.</p></div>
+</section>
+
+<!-- 13 -->
+<section class="ch" id="graficos">
+  <div class="ch-head"><span class="ch-num">13</span><h2>Gráficos con matplotlib</h2>
+    <div class="hus">Apoya <span class="hu">HU-80</span><span class="hu">HU-81</span><span class="hu">HU-91</span></div></div>
+  <div class="code"><pre><code class="language-python">import matplotlib
+matplotlib.use("Agg")                 # sin ventana: necesario al automatizar
+import matplotlib.pyplot as plt
+
+top = ventas["producto"].value_counts().head(15).sort_values()
+
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.barh(top.index, top.values, color="#0f6b58")
+ax.set_title("Productos más vendidos · semana 42")
+ax.set_xlabel("Número de ventas")
+ax.spines[["top", "right"]].set_visible(False)
+for y, v in enumerate(top.values):
+    ax.text(v + 0.3, y, str(v), va="center", fontsize=9)
+fig.text(0.01, 0.01, "Fuente: ventas.csv", fontsize=8, color="gray")
+fig.tight_layout()
+fig.savefig("reportes/top_productos.png", dpi=150)
+plt.close(fig)                        # libera memoria (importante en ciclos)
+
+# Boxplot de precios por categoría con pandas
+ax = ventas.boxplot(column="precio", by="categoria", vert=False, figsize=(8, 5))</code></pre></div>
+  <div class="note"><b>Un gráfico, un mensaje</b><p>Barras horizontales para rankings (los nombres largos se leen bien), boxplot para comparar distribuciones, líneas para tendencias en el tiempo. Siempre con título, unidades y fuente.</p></div>
+</section>
+
+<!-- 14 -->
+<section class="ch" id="reporte-excel">
+  <div class="ch-head"><span class="ch-num">14</span><h2>Exportar a Excel con to_excel</h2>
+    <div class="hus">Apoya <span class="hu">BUG-03</span><span class="hu">HU-15</span><span class="hu">HU-20</span><span class="hu">HU-36</span><span class="hu">HU-41</span><span class="hu">HU-44</span><span class="hu">HU-60</span><span class="hu">HU-82</span><span class="hu">HU-89</span><span class="hu">HU-90</span><span class="hu">HU-95</span></div></div>
+  <div class="prose">
+    <p>El cliente vive en Excel, así que casi todas las HU terminan en un archivo <code>.xlsx</code>. En este proyecto <b>todos los Excel se crean con pandas</b>: <code>DataFrame.to_excel</code> para un archivo de una hoja y <code>pd.ExcelWriter</code> para varias hojas. Necesitas <code>openpyxl</code> instalado (ya está en <code>requirements.txt</code>).</p>
+  </div>
+  <h3>Una tabla, un archivo</h3>
+  <div class="code"><pre><code class="language-python">import pandas as pd
+
+ventas = pd.read_csv("ventas.csv")
+resumen = ventas.groupby("producto")["unidades"].sum().reset_index()
+
+resumen.to_excel("reportes/resumen.xlsx", index=False, sheet_name="Resumen")
+# index=False evita una columna 0, 1, 2... que nadie pidió</code></pre></div>
+  <h3>Varias tablas, un archivo (una hoja cada una)</h3>
+  <div class="code"><pre><code class="language-python">with pd.ExcelWriter("reportes/reporte_tienda.xlsx") as xw:
+    resumen.to_excel(xw, sheet_name="Resumen", index=False)
+    top.to_excel(xw, sheet_name="Top productos", index=False)
+    ventas.to_excel(xw, sheet_name="Datos", index=False)
+# al salir del with, el archivo queda guardado</code></pre></div>
+  <div class="note"><b>Patrón del proyecto</b><p>Arma un diccionario <code>{nombre de hoja: DataFrame}</code> y recórrelo. Así, agregar un indicador nuevo es agregar una línea al diccionario.</p></div>
+  <div class="code"><pre><code class="language-python">tablas = {
+    "Top productos": top_productos(ventas),
+    "Por sucursal": por_sucursal(ventas),
+    "Clientes nuevos": clientes_nuevos(ventas),
+}
+with pd.ExcelWriter("reportes/indicadores.xlsx") as xw:
+    for nombre, tabla in tablas.items():
+        tabla.to_excel(xw, sheet_name=nombre[:31], index=False)   # Excel acepta máximo 31 caracteres</code></pre></div>
+  <h3>Una hoja (o un archivo) por grupo</h3>
+  <div class="code"><pre><code class="language-python"># Una hoja por sucursal
+with pd.ExcelWriter("reportes/ventas_por_sucursal.xlsx") as xw:
+    ventas.to_excel(xw, sheet_name="Todas", index=False)
+    for sucursal, grupo in ventas.groupby("sucursal"):
+        grupo.to_excel(xw, sheet_name=sucursal[:31], index=False)
+
+# Un archivo por categoría (nombre de archivo sin tildes ni espacios)
+import re
+for categoria, grupo in ventas.groupby("categoria"):
+    nombre = re.sub(r"[^A-Za-z0-9]+", "_", categoria).strip("_")
+    grupo.to_excel(f"reportes/fichas/ficha_{nombre}.xlsx", index=False)</code></pre></div>
+  <h3>Hoja de resumen con texto y una tabla debajo</h3>
+  <div class="code"><pre><code class="language-python">hallazgos = pd.DataFrame({"Hallazgos de la semana": [
+    f"El producto más vendido fue {top.iloc[0]['producto']}.",
+    f"Se vendieron {ventas['unidades'].sum():,} unidades en total.",
+]})
+with pd.ExcelWriter("reportes/reporte.xlsx") as xw:
+    hallazgos.to_excel(xw, sheet_name="Resumen", index=False)
+    top.to_excel(xw, sheet_name="Resumen", index=False, startrow=len(hallazgos) + 3)   # debajo, con espacio</code></pre></div>
+  <h3>Agregar filas a un Excel que ya existe (bitácoras)</h3>
+  <div class="code"><pre><code class="language-python">from pathlib import Path
+
+ruta = Path("data/processed/corridas.xlsx")
+nueva = pd.DataFrame([{"fecha": "2026-10-15 07:00", "estado": "OK", "segundos": 18.4}])
+previas = pd.read_excel(ruta) if ruta.exists() else None
+pd.concat([previas, nueva], ignore_index=True).to_excel(ruta, index=False)
+# pd.concat ignora el None cuando el archivo todavía no existe</code></pre></div>
+  <h3>Plantillas: un Excel con columnas y ejemplos</h3>
+  <div class="code"><pre><code class="language-python">columnas = ["sku", "producto", "precio", "sucursal"]
+ejemplo = pd.DataFrame([["L-200", "Portátil 14", 2899000, "Norte"]], columns=columnas)
+instrucciones = pd.DataFrame({
+    "columna": columnas,
+    "qué escribir": ["Código del producto", "Nombre", "Precio en pesos, sin puntos", "Norte o Sur"],
+})
+with pd.ExcelWriter("data/referencia/plantilla.xlsx") as xw:
+    ejemplo.to_excel(xw, sheet_name="Datos", index=False)
+    instrucciones.to_excel(xw, sheet_name="Instrucciones", index=False)</code></pre></div>
+  <div class="scroll"><table>
+    <thead><tr><th>Parámetro de to_excel</th><th>Para qué</th></tr></thead>
+    <tbody>
+      <tr><td><code>index=False</code></td><td>No escribir el índice de pandas. Casi siempre lo quieres.</td></tr>
+      <tr><td><code>sheet_name="..."</code></td><td>Nombre de la hoja: máximo 31 caracteres y sin los caracteres / \ ? * [ ]</td></tr>
+      <tr><td><code>startrow</code>, <code>startcol</code></td><td>Dónde empieza la tabla dentro de la hoja</td></tr>
+      <tr><td><code>columns=[...]</code></td><td>Exportar solo algunas columnas, en ese orden</td></tr>
+      <tr><td><code>na_rep="-"</code></td><td>Qué escribir en las celdas vacías</td></tr>
+      <tr><td><code>float_format="%.1f"</code></td><td>Número de decimales</td></tr>
+    </tbody>
+  </table></div>
+  <div class="pitfall"><b>Errores frecuentes</b><p><code>PermissionError</code>: el archivo está abierto en Excel; ciérralo. <code>ValueError</code> con el nombre de la hoja: tiene más de 31 caracteres o un carácter prohibido. Si llamas varias veces a <code>to_excel</code> con la misma ruta y sin <code>ExcelWriter</code>, cada llamada borra lo anterior.</p></div>
+  <div class="note"><b>Extra opcional: formato</b><p>Si terminas tu HU y quieres darle formato, dentro del <code>with</code> puedes usar <code>ws = xw.sheets["Resumen"]</code>, que es una hoja de openpyxl: <code>ws.freeze_panes = "A2"</code>, <code>ws.auto_filter.ref = ws.dimensions</code>, <code>ws.column_dimensions["A"].width = 40</code>. No es obligatorio en ninguna HU.</p></div>
+  <div class="practice"><span class="label">Practica</span><p>Con <code>data/sample/ofertas_sample.csv</code> crea <code>practica.xlsx</code> con tres hojas: las ofertas completas, el conteo de ofertas por ciudad y el conteo por rol. Ábrelo en Excel y verifica que no aparece la columna de índice.</p></div>
+</section>
+
+<!-- 15 -->
+<section class="ch" id="reporte-html">
+  <div class="ch-head"><span class="ch-num">15</span><h2>Reportes HTML autocontenidos</h2>
+    <div class="hus">Apoya <span class="hu">HU-86</span><span class="hu">HU-87</span><span class="hu">HU-96</span></div></div>
+  <div class="prose"><p>Un reporte HTML se abre en cualquier navegador y se puede enviar por correo. Para que sea un solo archivo, las imágenes van incrustadas en base64.</p></div>
+  <div class="code"><pre><code class="language-python">import base64
+from io import BytesIO
+
+def figura_a_base64(fig) -> str:
+    buffer = BytesIO()
+    fig.savefig(buffer, format="png", dpi=120, bbox_inches="tight")
+    return base64.b64encode(buffer.getvalue()).decode()
+
+tabla = resumen.to_html(classes="tabla", float_format=lambda x: f"{x:,.0f}", border=0)
+img = figura_a_base64(fig)
+hallazgo = f"El producto más vendido fue {top.index[-1]} con {top.values[-1]} ventas."
+
+html = f"""&lt;!doctype html&gt;
+&lt;html lang="es"&gt;&lt;meta charset="utf-8"&gt;&lt;title&gt;Reporte semanal&lt;/title&gt;
+&lt;style&gt;body{{font-family:sans-serif;max-width:900px;margin:auto}}
+.tabla td,.tabla th{{padding:4px 10px;border-bottom:1px solid #ddd}}&lt;/style&gt;
+&lt;h1&gt;Reporte semanal&lt;/h1&gt;
+&lt;p&gt;{hallazgo}&lt;/p&gt;
+&lt;img src="data:image/png;base64,{img}" alt="Top productos"&gt;
+{tabla}
+&lt;/html&gt;"""
+Path("reportes/reporte.html").write_text(html, encoding="utf-8")</code></pre></div>
+  <div class="note"><b>Llaves dobles</b><p>Dentro de un f-string, el CSS necesita <code>{{</code> y <code>}}</code> para que Python no los confunda con variables. Si el reporte crece, considera la librería Jinja2.</p></div>
+</section>
+
+<!-- 16 -->
+<section class="ch" id="automatizar">
+  <div class="ch-head"><span class="ch-num">16</span><h2>Automatizar: logging, CLI y programación</h2>
+    <div class="hus">Apoya <span class="hu">HU-24</span><span class="hu">HU-37</span><span class="hu">HU-83</span><span class="hu">HU-84</span><span class="hu">HU-88</span><span class="hu">HU-89</span><span class="hu">HU-92</span><span class="hu">HU-93</span></div></div>
+  <h3>logging en vez de print</h3>
+  <div class="code"><pre><code class="language-python">import logging
+from datetime import date
+
+Path("logs").mkdir(exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)-7s %(name)s: %(message)s",
+    handlers=[logging.StreamHandler(),
+              logging.FileHandler(f"logs/tienda_{date.today()}.log", encoding="utf-8")],
+)
+log = logging.getLogger("tienda.scraping")     # un logger por módulo
+
+log.info("Página %s: %s productos", n, len(productos))
+log.warning("Precio no reconocido: %r", texto)
+log.error("Sin resultados en %s", url)
+log.exception("Falló la descarga")             # dentro de un except: incluye el traceback</code></pre></div>
+  <h3>Línea de comandos con argparse</h3>
+  <div class="code"><pre><code class="language-python">import argparse, sys
+
+parser = argparse.ArgumentParser(description="Pipeline de la tienda")
+parser.add_argument("etapa", choices=["scraping", "excel", "reporte", "todo"])
+parser.add_argument("--completo", action="store_true", help="ignora lo ya descargado")
+parser.add_argument("--max-paginas", type=int, default=50)
+args = parser.parse_args()
+
+if hubo_errores:
+    sys.exit(1)        # código de salida != 0: el programador de tareas sabrá que falló</code></pre></div>
+  <h3>Procesar archivos nuevos de una carpeta</h3>
+  <div class="code"><pre><code class="language-python">import hashlib, shutil
+
+def huella(ruta: Path) -> str:
+    return hashlib.sha256(ruta.read_bytes()).hexdigest()
+
+entrada = Path("data/raw/excel/entrada")
+for archivo in sorted(entrada.glob("*.xlsx")):
+    if huella(archivo) in ya_procesados:
+        continue
+    try:
+        procesar(archivo)
+        shutil.move(archivo, entrada.parent / "procesados" / archivo.name)
+    except Exception:
+        log.exception("Error con %s", archivo.name)
+        shutil.move(archivo, entrada.parent / "errores" / archivo.name)</code></pre></div>
+  <h3>Programar la ejecución</h3>
+  <div class="code"><pre><code class="language-bash"># ejecutar_pipeline.bat  (Windows)
+@echo off
+cd /d C:\ruta\a\talentscope
+call .venv\Scripts\activate
+python -m talentscope.pipeline todo &gt;&gt; logs\programado.log 2&gt;&amp;1
+
+# Programador de tareas de Windows: todos los días a las 7:00
+schtasks /create /tn "TalentScope" /tr "C:\ruta\a\talentscope\ejecutar_pipeline.bat" /sc daily /st 07:00
+
+# Linux / Mac con cron  (crontab -e)
+0 7 * * * cd /ruta/a/talentscope &amp;&amp; .venv/bin/python -m talentscope.pipeline todo &gt;&gt; logs/cron.log 2&gt;&amp;1</code></pre></div>
+</section>
+
+<!-- 17 -->
+<section class="ch" id="tests">
+  <div class="ch-head"><span class="ch-num">17</span><h2>Tests con pytest</h2>
+    <div class="hus">Apoya <span class="hu">HU-18</span><span class="hu">HU-43</span><span class="hu">HU-64</span><span class="hu">HU-97</span> y la Definición de Hecho</div></div>
+  <div class="code"><pre><code class="language-bash">pytest                          # todo
+pytest tests/test_normalizadores.py -v
+pytest -k salario               # solo tests cuyo nombre contiene "salario"
+pytest -x                       # se detiene en el primer fallo
+pytest --cov=talentscope        # cobertura (pip install pytest-cov)</code></pre></div>
+  <div class="code"><pre><code class="language-python">import pytest
+
+# Un caso por fila: agrega una fila cada vez que encuentres un formato nuevo
+@pytest.mark.parametrize("entrada, esperado", [
+    ("2,5 kg", 2.5),
+    ("500 g", 0.5),
+    ("sin peso", None),
+])
+def test_peso_en_kg(entrada, esperado):
+    assert peso_en_kg(entrada) == esperado
+
+
+# Fixture: datos preparados que reciben los tests
+@pytest.fixture
+def html_listado():
+    return (Path(__file__).parent / "fixtures" / "listado.html").read_text(encoding="utf-8")
+
+def test_listado_tiene_20(html_listado):
+    assert len(parsear_listado(html_listado)) == 20
+
+
+# tmp_path: carpeta temporal para crear un Excel de prueba
+def test_ignora_fila_total(tmp_path):
+    ruta = tmp_path / "prueba.xlsx"
+    pd.DataFrame({"producto": ["A", "TOTAL"], "precio": [10, 10]}).to_excel(ruta, index=False)
+    assert len(leer_inventario(ruta)) == 1
+
+
+# monkeypatch: reemplazar la red por una función falsa
+def test_scraper_sin_red(monkeypatch, html_listado):
+    monkeypatch.setattr("tienda.scraper.descargar", lambda url: html_listado)
+    assert len(scrapear("http://cualquier.url")) == 20
+
+
+# Verificar que se lanza una excepción
+def test_columnas_faltantes():
+    with pytest.raises(ValueError, match="Faltan columnas"):
+        validar(pd.DataFrame({"x": [1]}))</code></pre></div>
+  <div class="note"><b>Primero el test en rojo</b><p>Los tests en rojo del repositorio describen el comportamiento que el cliente espera. Tu trabajo es ponerlos en verde sin cambiar lo que verifican. Si crees que un test está mal, discútelo en el refinamiento.</p></div>
+</section>
+
+<!-- 18 -->
+<section class="ch" id="spring">
+  <div class="ch-head"><span class="ch-num">18</span><h2>Puente con Spring Boot</h2>
+    <div class="hus">Apoya <span class="hu">HU-65</span><span class="hu">HU-66</span></div></div>
+  <div class="prose"><p>Ya conocen Spring Boot. Lo nuevo aquí es que la API <b>no calcula</b> nada pesado: Python produce los datos (CSV o SQLite) y Spring los expone. Cada lenguaje hace lo que mejor sabe hacer.</p></div>
+  <div class="code"><pre><code class="language-java">// Un record es ideal para DTOs inmutables (Java 16+)
+public record SkillConteo(String skill, long ofertas, double porcentaje) {}
+
+@Service
+public class SkillService {
+    private final Path csv = Path.of("../data/sample/ofertas_sample.csv");
+
+    public List&lt;SkillConteo&gt; top(int n) throws IOException {
+        List&lt;String&gt; lineas = Files.readAllLines(csv, StandardCharsets.UTF_8);
+        // Ojo: un split(",") simple falla si un campo trae comas entre comillas.
+        // Para CSV reales usa una librería como OpenCSV o Apache Commons CSV.
+        ...
+    }
+}
+
+@RestController
+@RequestMapping("/api/skills")
+public class SkillController {
+    private final SkillService servicio;
+    public SkillController(SkillService servicio) { this.servicio = servicio; }
+
+    @GetMapping("/top")
+    public Map&lt;String, Object&gt; top(@RequestParam(defaultValue = "10") int n) throws IOException {
+        return Map.of("items", servicio.top(n));
+    }
+}</code></pre></div>
+  <h3>Leer SQLite desde Spring (Sprint 3)</h3>
+  <div class="code"><pre><code class="language-java">// pom.xml: org.xerial:sqlite-jdbc  y  spring-boot-starter-jdbc
+// application.properties:
+//   spring.datasource.url=jdbc:sqlite:../data/processed/talentscope.db
+//   spring.datasource.driver-class-name=org.sqlite.JDBC
+
+@Repository
+public class SalarioRepository {
+    private final JdbcTemplate jdbc;
+    public SalarioRepository(JdbcTemplate jdbc) { this.jdbc = jdbc; }
+
+    public List&lt;Long&gt; salarios(String rol, String ciudad) {
+        return jdbc.queryForList(
+            "SELECT salario_mensual_cop FROM encuestas WHERE rol = ? AND ciudad = ?",
+            Long.class, rol, ciudad);
+    }
+}</code></pre></div>
+  <div class="note"><b>La mediana en Java</b><p>SQLite no trae una función de mediana. Ordena la lista y toma el elemento del medio (o el promedio de los dos del medio). Escribe un test con 4 y con 5 valores.</p></div>
+</section>
+
+<!-- 19 -->
+<section class="ch" id="git">
+  <div class="ch-head"><span class="ch-num">19</span><h2>Flujo de trabajo con Git</h2>
+    <div class="hus">Para todos los squads</div></div>
+  <div class="code"><pre><code class="language-bash">git checkout main
+git pull                                       # siempre parte de lo último
+git checkout -b feature/HU-13-parsear-salario  # una rama por HU
+
+# ... trabajas, corres pytest ...
+git add src/talentscope/limpieza/normalizadores.py tests/test_normalizadores.py
+git commit -m "Implementa parsear_salario para rangos COP y USD (HU-13)"
+git push -u origin feature/HU-13-parsear-salario
+# abre el Pull Request, enlaza la HU y pide revisión a alguien del squad
+
+# si main avanzó mientras trabajabas
+git fetch origin
+git merge origin/main                          # resuelve conflictos, corre pytest, push</code></pre></div>
+  <div class="prose">
+    <p><b>Al revisar un PR de un compañero</b>, pregunta: ¿cumple los criterios de aceptación?, ¿hay tests para los casos nuevos?, ¿pasa <code>pytest</code> completo?, ¿entiendo el código sin que me lo expliquen?, ¿hay rutas quemadas o <code>print</code> olvidados?</p>
+    <p>No subas al repositorio: la carpeta <code>.venv</code>, archivos de <code>data/processed/</code>, reportes generados ni contraseñas. El <code>.gitignore</code> ya cubre la mayoría.</p>
+  </div>
+</section>
+
+<footer>Guía técnica TalentScope · DataNexo S.A.S. · Proyecto educativo. Los ejemplos son orientativos: adáptalos a tu HU y escribe tus propios tests.</footer>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script>
+document.querySelectorAll("pre > code").forEach(code => {
+  const pre = code.parentElement;
+  const caja = pre.parentElement.classList.contains("code") ? pre.parentElement : null;
+  if (!caja) return;
+  const lang = (code.className.match(/language-(\w+)/) || [])[1];
+  if (lang) { const l = document.createElement("span"); l.className = "lang"; l.textContent = lang; caja.appendChild(l); }
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.textContent = "Copiar";
+  btn.addEventListener("click", () => {
+    const texto = code.textContent;
+    const ok = () => { btn.textContent = "Copiado"; setTimeout(() => btn.textContent = "Copiar", 1500); };
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(texto).then(ok).catch(() => seleccionar(code));
+    } else { seleccionar(code); }
+  });
+  caja.appendChild(btn);
+});
+function seleccionar(el) {
+  const r = document.createRange(); r.selectNodeContents(el);
+  const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+}
+if (window.Prism) Prism.highlightAll();
+</script>

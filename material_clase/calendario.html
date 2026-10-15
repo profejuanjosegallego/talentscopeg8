@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendario TalentScope</title>
+<meta name="description" content="Calendario de clases del proyecto TalentScope: sesiones virtuales y presenciales, jueves de 6:30 a 9:00 p. m.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800&display=swap">
+<style>
+:root{--cream:#FFF8EE;--ink:#22313F;--soft:#5D6B78;--card:#FFFFFF;--line:#F0E6D6;--mint:#7DD3B0;--mintd:#2E8B6A;--mintbg:#EEF8F3;--peach:#FFB38A;--peachbg:#FFF0E6;--butter:#FFD86B;--lilac:#B9A6FF;--lilacbg:#F4F0FF;--sky:#8EC9FF;--coral:#FF8A80;--night:#1D2A38;--shadow:0 12px 34px rgba(34,49,63,.10)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--cream:#162029;--ink:#EEF2F5;--soft:#A9B7C4;--card:#1F2C38;--line:#2C3B48;--mintbg:#1D3A33;--peachbg:#3A2A22;--lilacbg:#2A2643;--mintd:#7DD3B0;--shadow:0 12px 34px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--cream:#162029;--ink:#EEF2F5;--soft:#A9B7C4;--card:#1F2C38;--line:#2C3B48;--mintbg:#1D3A33;--peachbg:#3A2A22;--lilacbg:#2A2643;--mintd:#7DD3B0;--shadow:0 12px 34px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font:17px/1.5 Nunito,system-ui,sans-serif;overflow-x:hidden}
+.wrap{max-width:1000px;margin:auto;padding:0 16px}
+h1,h2,h3{font-family:Fredoka,system-ui,sans-serif;line-height:1.1;margin:0}
+header{position:relative;padding:48px 0 24px;overflow:hidden}
+.blob{position:absolute;border-radius:50%;opacity:.45;z-index:0;pointer-events:none}
+header .wrap{position:relative;z-index:1}
+.eyebrow{font:700 13px/1 ui-monospace,Consolas,monospace;letter-spacing:3px;color:var(--mintd)}
+h1{font-size:clamp(36px,7vw,64px);margin:12px 0 8px}
+.sub{color:var(--soft);font-size:19px;max-width:640px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.chip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 16px;font-weight:800;font-size:15px;background:var(--card);box-shadow:var(--shadow)}
+.dot{width:12px;height:12px;border-radius:50%}
+.hoy{background:var(--night);color:#FFF8EE;border-radius:32px;padding:28px;margin:8px 0 28px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;box-shadow:var(--shadow)}
+.hoy .eyebrow{color:var(--butter)}
+.hoy h2{font-size:clamp(26px,4.5vw,38px);margin:10px 0 6px}
+.hoy p{margin:0;color:#C9D6E2}
+.cuenta{font-family:Fredoka,sans-serif;font-size:20px;color:var(--mint);margin-top:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:999px;padding:14px 24px;font:800 17px Nunito,sans-serif;text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn.teams{background:#5B5FC7;color:#fff}
+.btn.teams:hover{background:#4a4eb3}
+.btn.claro{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.btn.mapa{background:var(--peach);color:#22313F}
+.acciones{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 28px}
+.lista{display:grid;gap:14px;margin-bottom:40px}
+.ses{display:grid;grid-template-columns:96px 1fr auto;gap:18px;align-items:center;background:var(--card);border-radius:26px;padding:18px 20px;box-shadow:var(--shadow);border-left:10px solid var(--mint)}
+.ses.presencial{border-left-color:var(--peach)}
+.ses.pasada{opacity:.55}
+.ses.proxima{outline:3px solid var(--butter);outline-offset:2px}
+.fecha{text-align:center;border-radius:20px;padding:10px 0;background:var(--mintbg)}
+.ses.presencial .fecha{background:var(--peachbg)}
+.fecha .d{font-family:Fredoka,sans-serif;font-size:38px;font-weight:700;line-height:1}
+.fecha .m{font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:2px;color:var(--soft)}
+.ses h3{font-size:22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 6px}
+.tag{font-size:13px;font-weight:800;border-radius:999px;padding:4px 12px;background:var(--lilacbg)}
+.tag.v{background:var(--mintbg);color:var(--mintd)}
+.tag.p{background:var(--peachbg);color:#B4552F}
+.tag.hoyt{background:var(--butter);color:#22313F}
+.ses p{margin:0;color:var(--soft);font-size:16px}
+.ses .btn{padding:10px 18px;font-size:15px}
+.leyenda{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:28px}
+.box{background:var(--card);border-radius:26px;padding:20px;box-shadow:var(--shadow)}
+.box h3{font-size:20px;margin-bottom:6px}
+.box p{margin:0;color:var(--soft)}
+footer{color:var(--soft);font-size:14px;padding:10px 0 40px;text-align:center}
+.tema{position:absolute;top:16px;right:16px;z-index:2}
+.tema button{border:0;background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font:700 14px Nunito,sans-serif;box-shadow:var(--shadow);cursor:pointer}
+@media (max-width:640px){
+  .hoy{grid-template-columns:1fr}
+  .ses{grid-template-columns:72px 1fr;gap:14px}
+  .ses .accion{grid-column:1/-1}
+  .ses .accion .btn{width:100%}
+  .fecha .d{font-size:30px}
+  .btn{white-space:normal}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="blob" style="width:320px;height:320px;background:var(--mint);left:-110px;top:-120px"></div>
+  <div class="blob" style="width:220px;height:220px;background:var(--lilac);right:-60px;top:40px"></div>
+  <div class="tema"><button id="btnTema" type="button">🌗 Tema</button></div>
+  <div class="wrap">
+    <div class="eyebrow">DATANEXO S.A.S. · PROYECTO TALENTSCOPE 🔭</div>
+    <h1>Calendario de clases</h1>
+    <p class="sub">Todos los jueves de <b>6:30 a 9:00 p. m.</b> (hora de Colombia). Ciclo: <b>dos virtuales y una presencial</b> en el <b>aula 407</b>.</p>
+    <div class="chips">
+      <span class="chip"><span class="dot" style="background:var(--mint)"></span>Virtual por Teams</span>
+      <span class="chip"><span class="dot" style="background:var(--peach)"></span>Presencial · Aula 407</span>
+      <span class="chip">🗓️ 15 oct → 10 dic 2026</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hoy" id="destacada" aria-live="polite"></section>
+
+  <div class="acciones">
+    <a class="btn teams" id="teamsGeneral" target="_blank" rel="noopener">💻 Enlace de Teams de las clases virtuales</a>
+    <button class="btn claro" id="btnIcs" type="button">📅 Agregar todas las clases a mi calendario</button>
+  </div>
+
+  <div class="leyenda">
+    <div class="box"><h3>💻 Clases virtuales</h3><p>Entra 5 minutos antes con el mismo enlace de Teams de siempre. Cámara y micrófono listos para el daily.</p></div>
+    <div class="box"><h3>🏫 Clases presenciales</h3><p>Aula 407. Trae tu computador con el proyecto instalado: son días de review, retro y trabajo en squad.</p></div>
+    <div class="box"><h3>🏃 Sprints de 2 semanas</h3><p>Cada sprint cierra con una review: muestras lo que hiciste, no lo que vas a hacer.</p></div>
+  </div>
+
+  <h2 style="font-size:30px;margin:0 0 16px">Todas las sesiones</h2>
+  <section class="lista" id="lista"></section>
+</main>
+
+<footer>TalentScope · DataNexo S.A.S. · Proyecto Integrador. Las fechas pueden ajustarse: revisa esta página antes de cada clase.</footer>
+
+<script>
+const TEAMS = "https://teams.microsoft.com/meet/275547157697653?p=vAfDyzXU4EZBrDRwVn";
+const AULA = "Aula 407";
+const HORA_INI = "18:30", HORA_FIN = "21:00"; // hora de Colombia (UTC-5)
+
+// Ciclo: virtual, virtual, presencial. Edita aquí si cambia algo.
+const SESIONES = [
+  { fecha: "2026-10-15", modo: "virtual",    sprint: "Sprint 1", titulo: "Kickoff: bienvenidos a DataNexo", detalle: "Conocemos al cliente y el problema, armamos los 4 squads, instalamos el proyecto y tomamos la primera HU en Kaizen." },
+  { fecha: "2026-10-22", modo: "virtual",    sprint: "Sprint 1", titulo: "Seguimiento del Sprint 1", detalle: "Daily por squad, dudas técnicas y primeros tests en verde." },
+  { fecha: "2026-10-29", modo: "presencial", sprint: "Sprint 1 → 2", titulo: "Review del Sprint 1 y planeación del Sprint 2", detalle: "Mostramos los bugs corregidos, hacemos la retro y planeamos el Sprint 2: datos confiables." },
+  { fecha: "2026-11-05", modo: "virtual",    sprint: "Sprint 2", titulo: "Seguimiento del Sprint 2", detalle: "Daily, avance de los datos limpios y primeros indicadores." },
+  { fecha: "2026-11-12", modo: "virtual",    sprint: "Sprint 2 → 3", titulo: "Review del Sprint 2 y planeación del Sprint 3", detalle: "Cada fuente entrega sus datos según el contrato. Planeamos el Sprint 3: que todo corra solo." },
+  { fecha: "2026-11-19", modo: "presencial", sprint: "Sprint 3", titulo: "Trabajo en squad: automatización", detalle: "Sesión cara a cara para destrabar, integrar entre squads y revisar pull requests." },
+  { fecha: "2026-11-26", modo: "virtual",    sprint: "Sprint 3 → 4", titulo: "Review del Sprint 3 y planeación del Sprint 4", detalle: "Revisamos la automatización y nos organizamos para la entrega final." },
+  { fecha: "2026-12-03", modo: "virtual",    sprint: "Sprint 4", titulo: "Integración y ensayo de la demo", detalle: "Todo de punta a punta, QA cruzado entre squads y ensayo general." },
+  { fecha: "2026-12-10", modo: "presencial", sprint: "Sprint 4", titulo: "🎉 Demo final al cliente", detalle: "Presentamos TalentScope funcionando. ¡Cierre del proyecto!" },
+];
+
+const MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const DIAS = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const inicio = s => new Date(`${s.fecha}T${HORA_INI}:00-05:00`);
+const fin = s => new Date(`${s.fecha}T${HORA_FIN}:00-05:00`);
+const fechaLarga = s => { const d = new Date(`${s.fecha}T12:00:00-05:00`); return `${DIAS[d.getUTCDay()]} ${d.getUTCDate()} de ${["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"][d.getUTCMonth()]}`; };
+const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+document.getElementById("teamsGeneral").href = TEAMS;
+
+function lugar(s) {
+  return s.modo === "virtual"
+    ? `<span class="tag v">💻 Virtual · Teams</span>`
+    : `<span class="tag p">🏫 Presencial · ${AULA}</span>`;
+}
+function accion(s) {
+  return s.modo === "virtual"
+    ? `<a class="btn teams" href="${TEAMS}" target="_blank" rel="noopener">Unirme por Teams</a>`
+    : `<span class="btn mapa">📍 ${AULA}</span>`;
+}
+
+function pintar() {
+  const ahora = new Date();
+  const actual = SESIONES.find(s => ahora >= inicio(s) && ahora <= fin(s));
+  const proxima = actual || SESIONES.find(s => fin(s) > ahora);
+  const hoyStr = new Date(ahora.getTime() - 5 * 3600e3).toISOString().slice(0, 10);
+
+  document.getElementById("lista").innerHTML = SESIONES.map((s, i) => {
+    const d = new Date(`${s.fecha}T12:00:00-05:00`);
+    const clases = ["ses", s.modo, fin(s) < ahora ? "pasada" : "", s === proxima ? "proxima" : ""].join(" ");
+    const hoy = s.fecha === hoyStr ? `<span class="tag hoyt">⭐ HOY</span>` : "";
+    return `<article class="${clases}">
+      <div class="fecha"><div class="d">${d.getUTCDate()}</div><div class="m">${MESES[d.getUTCMonth()]}</div></div>
+      <div><h3>${esc(s.titulo)}</h3>
+        <div class="meta">${hoy}${lugar(s)}<span class="tag">🕡 6:30–9:00 p. m.</span><span class="tag">${esc(s.sprint)}</span><span class="tag">Sesión ${i + 1} de ${SESIONES.length}</span></div>
+        <p>${esc(s.detalle)}</p></div>
+      <div class="accion">${accion(s)}</div>
+    </article>`;
+  }).join("");
+
+  const box = document.getElementById("destacada");
+  if (!proxima) {
+    box.innerHTML = `<div><div class="eyebrow">PROYECTO TERMINADO</div><h2>¡Gracias por todo, equipo! 💚</h2><p>Todas las sesiones ya pasaron.</p></div>`;
+    return;
+  }
+  const ms = inicio(proxima) - ahora;
+  let cuenta;
+  if (actual) cuenta = "🔴 ¡La clase está en curso ahora mismo!";
+  else if (proxima.fecha === hoyStr) {
+    const h = Math.floor(ms / 3600e3), m = Math.floor(ms % 3600e3 / 60e3);
+    cuenta = `⏱️ Empieza hoy en ${h > 0 ? h + " h " : ""}${m} min`;
+  } else cuenta = `⏳ Faltan ${Math.ceil(ms / 86400e3)} días`;
+  const etiqueta = proxima.fecha === hoyStr ? "HOY" : "PRÓXIMA CLASE";
+  box.innerHTML = `<div>
+      <div class="eyebrow">${etiqueta} · ${proxima.modo === "virtual" ? "VIRTUAL" : "PRESENCIAL"}</div>
+      <h2>${esc(proxima.titulo)}</h2>
+      <p>${fechaLarga(proxima)} · 6:30 a 9:00 p. m. · ${proxima.modo === "virtual" ? "por Teams" : AULA}</p>
+      <div class="cuenta">${cuenta}</div>
+    </div>
+    <div>${proxima.modo === "virtual"
+      ? `<a class="btn teams" href="${TEAMS}" target="_blank" rel="noopener">💻 Unirme por Teams</a>`
+      : `<span class="btn mapa">📍 ${AULA}</span>`}</div>`;
+}
+pintar();
+setInterval(pintar, 30000);
+
+// Archivo .ics con todas las sesiones (Google Calendar, Outlook, iPhone)
+document.getElementById("btnIcs").addEventListener("click", () => {
+  const f = d => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const linea = t => t.replace(/[,;\\]/g, m => "\\" + m).replace(/\n/g, "\\n");
+  const eventos = SESIONES.map((s, i) => [
+    "BEGIN:VEVENT",
+    `UID:talentscope-${s.fecha}@datanexo`,
+    `DTSTAMP:${f(new Date())}`,
+    `DTSTART:${f(inicio(s))}`,
+    `DTEND:${f(fin(s))}`,
+    `SUMMARY:${linea(`TalentScope · ${s.titulo} (${s.modo === "virtual" ? "virtual" : AULA})`)}`,
+    `LOCATION:${linea(s.modo === "virtual" ? "Microsoft Teams" : AULA)}`,
+    `DESCRIPTION:${linea(`${s.detalle}\n${s.modo === "virtual" ? "Enlace: " + TEAMS : "Presencial en el " + AULA}`)}`,
+    ...(s.modo === "virtual" ? [`URL:${TEAMS}`] : []),
+    "BEGIN:VALARM", "TRIGGER:-PT30M", "ACTION:DISPLAY", "DESCRIPTION:Clase TalentScope en 30 minutos", "END:VALARM",
+    "END:VEVENT"].join("\r\n"));
+  const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//DataNexo//TalentScope//ES", "CALSCALE:GREGORIAN",
+    "X-WR-CALNAME:Clases TalentScope", ...eventos, "END:VCALENDAR"].join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
+  a.download = "clases_talentscope.ics";
+  document.body.appendChild(a); a.click(); a.remove();
+});
+
+// Tema claro / oscuro (se recuerda en este navegador)
+const raiz = document.documentElement;
+try { const t = localStorage.getItem("tema"); if (t) raiz.dataset.theme = t; } catch (e) {}
+document.getElementById("btnTema").addEventListener("click", () => {
+  const oscuro = raiz.dataset.theme ? raiz.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  raiz.dataset.theme = oscuro ? "light" : "dark";
+  try { localStorage.setItem("tema", raiz.dataset.theme); } catch (e) {}
+});
+</script>
+</body>
+</html>
