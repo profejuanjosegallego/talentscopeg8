@@ -7,3 +7,6 @@ data/processed/*
 reportes/*
 !reportes/.gitkeep
 ~$*.xlsx
+
+
+src/talentscope.egg-info/
