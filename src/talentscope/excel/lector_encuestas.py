@@ -24,3 +24,27 @@ def leer_encuesta_uniandina(ruta) -> pd.DataFrame:
     df = df.rename(columns=COLUMNAS_UNIANDINA)
     df["fuente"] = "uniandina"
     return df
+
+COLUMNAS_TALENTIA = {
+    "Rol": "rol",
+    "Exp (años)": "anios_experiencia",
+    "Sueldo": "salario_mensual_cop",
+    "Stack": "skills",
+    "¿Remoto?": "remoto",
+}
+
+
+def leer_estudio_talentia(ruta) -> pd.DataFrame:
+    hojas = pd.read_excel(ruta, sheet_name=None)
+    partes = []
+    for nombre, df in hojas.items():
+        if nombre == "Notas":
+            continue
+        df = df.dropna(how="all")
+        df = df[~df["Rol"].astype(str).str.strip().str.upper().str.startswith("TOTAL")]
+        df = df.assign(ciudad=nombre)
+        partes.append(df)
+    todo = pd.concat(partes, ignore_index=True)
+    todo = todo.rename(columns=COLUMNAS_TALENTIA)
+    todo["fuente"] = "talentia"
+    return todo
