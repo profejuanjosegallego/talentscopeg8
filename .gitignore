@@ -7,3 +7,4 @@ data/processed/*
 reportes/*
 !reportes/.gitkeep
 ~$*.xlsx
+*.egg-info/
