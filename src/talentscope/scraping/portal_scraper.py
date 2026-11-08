@@ -9,7 +9,7 @@ Estado (Sprint 0, equipo anterior):
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-
+from urllib.parse import urljoin
 from talentscope.config import DATA_PROCESSED, PORTAL_URL, USER_AGENT
 
 
@@ -36,11 +36,25 @@ def parsear_listado(html: str) -> list[dict]:
         })
     return ofertas
 
-
-def scrapear(url_inicial: str = PORTAL_URL) -> pd.DataFrame:
-    html = descargar(url_inicial)
-    ofertas = parsear_listado(html)
-    # TODO HU-10: seguir el enlace "Siguiente" hasta la última página.
+def url_siguiente(html: str, url_actual: str) -> str | None:
+    """Devuelve la URL completa de la página siguiente, o None si es la última."""
+    soup = BeautifulSoup(html, "html.parser")
+    enlace = soup.select_one("a[rel=next]")
+    if enlace is None:
+        return None
+    return urljoin(url_actual, enlace["href"])
+    
+def scrapear(url_inicial: str = PORTAL_URL, max_paginas: int = 50) -> pd.DataFrame:
+    ofertas = []
+    url = url_inicial
+    paginas = 0
+    while url is not None and paginas < max_paginas:
+        html = descargar(url)
+        # Agrega las ofertas de esta página a la lista general
+        ofertas.extend(parsear_listado(html))
+        # Pasa a la siguiente URL usando la nueva funcion
+        url = url_siguiente(html, url)
+        paginas += 1
     return pd.DataFrame(ofertas)
 
 
