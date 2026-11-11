@@ -20,7 +20,8 @@ COLUMNAS_UNIANDINA = {
 def leer_encuesta_uniandina(ruta) -> pd.DataFrame:
     # FIXME BUG-02: el archivo trae un título y notas arriba; los encabezados reales
     # están en la fila 4 de Excel. Así como está, las columnas salen como "Unnamed: 1"...
-    df = pd.read_excel(ruta, sheet_name="Respuestas")
+    df = pd.read_excel(ruta, sheet_name="Respuestas", header=3)
     df = df.rename(columns=COLUMNAS_UNIANDINA)
+    df = df[~df["rol"].astype(str).str.startswith("Total")]
     df["fuente"] = "uniandina"
     return df
