@@ -26,6 +26,9 @@ def test_normalizar_ciudad(entrada, esperado):
     ("USD 1,100 - 1,500 / mes", (1100, 1500, "USD")),
     ("4,5 a 6,1 millones", (4500000, 6100000, "COP")),
     ("A convenir", (None, None, None)),
+    ("Confidencial", (None, None, None)),
+    ("$ 8.300.000 - 11.200.000 COP", (8300000, 11200000, "COP")),
+    ("5,5 millones", (5500000, 5500000, "COP")),
 ])
 def test_parsear_salario(entrada, esperado):
     assert parsear_salario(entrada) == esperado
