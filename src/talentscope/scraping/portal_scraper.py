@@ -3,9 +3,11 @@ Scraper del portal EmpleosTech.
 
 Estado (Sprint 0, equipo anterior):
   - Descarga y parsea SOLO la primera página del listado.   -> ver HU-10
-  - No entra al detalle de cada oferta (faltan skills).      -> ver HU-11
+  - Entra al detalle de cada oferta: skills, modalidad y descripción (HU-11).
   - No tiene timeout, reintentos ni pausa entre peticiones.  -> ver BUG-04
 """
+from urllib.parse import urljoin
+
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -37,9 +39,33 @@ def parsear_listado(html: str) -> list[dict]:
     return ofertas
 
 
+def _texto(soup: BeautifulSoup, selector: str) -> str:
+    """Texto limpio del primer elemento que cumple el selector, o "" si no existe."""
+    elemento = soup.select_one(selector)
+    return elemento.get_text(strip=True) if elemento else ""
+
+
+def parsear_detalle(html: str) -> dict:
+    """Extrae skills, modalidad y descripción del HTML del detalle de una oferta.
+
+    Las skills se unen con "|" como pide el contrato de datos (ej. "JavaScript|React|Java").
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    skills = [li.get_text(strip=True) for li in soup.select("ul.skills li")]
+    return {
+        "skills": "|".join(s for s in skills if s),
+        "modalidad": _texto(soup, ".modalidad"),
+        "descripcion": _texto(soup, ".descripcion"),
+    }
+
+
 def scrapear(url_inicial: str = PORTAL_URL) -> pd.DataFrame:
     html = descargar(url_inicial)
     ofertas = parsear_listado(html)
+    # HU-11: entrar al detalle de cada oferta para sacar skills, modalidad y descripción
+    for oferta in ofertas:
+        url_detalle = urljoin(url_inicial, oferta["url_detalle"])  # ../oferta/ET-10450.html → URL completa
+        oferta.update(parsear_detalle(descargar(url_detalle)))
     # TODO HU-10: seguir el enlace "Siguiente" hasta la última página.
     return pd.DataFrame(ofertas)
 
