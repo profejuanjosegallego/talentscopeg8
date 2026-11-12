@@ -68,3 +68,16 @@ talentscope/
 - Lean primero [`docs/ONBOARDING.md`](docs/ONBOARDING.md).
 - El backlog está en [`docs/BACKLOG.md`](docs/BACKLOG.md).
 - Los squads se comunican a través del [contrato de datos](docs/CONTRATO_DATOS.md). Si necesitan cambiarlo, se negocia en el refinamiento, no por WhatsApp.
+
+## Logging
+
+En cada archivo:
+
+    import logging
+    log = logging.getLogger(__name__)
+
+- `log.info(...)` para lo normal ("Scraping: 118 ofertas").
+- `log.warning(...)` para lo raro que no detiene el programa ("Ciudad no reconocida").
+- `log.error(...)` cuando algo falló.
+
+No uses `print`. Los logs quedan en `logs/talentscope_AAAA-MM-DD.log`.

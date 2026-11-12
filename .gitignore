@@ -6,4 +6,5 @@ data/processed/*
 !data/processed/.gitkeep
 reportes/*
 !reportes/.gitkeep
+logs/
 ~$*.xlsx

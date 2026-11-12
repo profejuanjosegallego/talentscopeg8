@@ -7,6 +7,7 @@ DATA_REFERENCIA = RAIZ / "data" / "referencia"
 DATA_PROCESSED = RAIZ / "data" / "processed"
 DATA_SAMPLE = RAIZ / "data" / "sample"
 CARPETA_REPORTES = RAIZ / "reportes"
+CARPETA_LOGS = RAIZ / "logs"  # aquí se guardan los logs diarios
 
 # Portal servido localmente con:  python -m http.server 8000 --directory portal_mock
 PORTAL_URL = "http://127.0.0.1:8000/ofertas/pagina-1.html"
