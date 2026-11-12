@@ -5,9 +5,12 @@ Estado (Sprint 0, equipo anterior): prototipo que funcionaba "en el PC de André
   - BUG-03: ruta absoluta quemada y el conteo de skills está mal.
   - Sin gráficos ni salarios.                 -> ver HU-80..82 (Squad D) y HU-50..54 (Squad C)
 """
+import logging
 from collections import Counter
 
 import pandas as pd
+
+log = logging.getLogger(__name__)
 
 RUTA_OFERTAS = "C:/Users/andres.dev/Desktop/talentscope/data/sample/ofertas_sample.csv"
 
@@ -23,7 +26,7 @@ def top_skills(df: pd.DataFrame, n: int = 10) -> pd.DataFrame:
 def generar_reporte(salida="reporte_semanal.xlsx"):
     df = pd.read_csv(RUTA_OFERTAS)
     top_skills(df).to_excel(salida, index=False)
-    print(f"Reporte generado: {salida}")
+    log.info("Reporte generado: %s", salida)
 
 
 if __name__ == "__main__":
