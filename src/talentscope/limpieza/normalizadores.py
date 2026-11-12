@@ -1,21 +1,42 @@
 """Funciones puras de limpieza. Son las más fáciles de probar: ¡escribe tests!"""
+import logging
+import re
+import unicodedata
+
 import pandas as pd
+
+log = logging.getLogger(__name__)
+
+ALIAS_CIUDAD = {
+    "bogota": "Bogotá",
+    "medellin": "Medellín",
+    "cali": "Cali",
+    "barranquilla": "Barranquilla",
+    "b/quilla": "Barranquilla",
+    "remoto": "Remoto",
+    "remote": "Remoto",
+    "teletrabajo": "Remoto",
+}
 
 
 def normalizar_ciudad(texto):
     """Devuelve el nombre canónico de la ciudad: Bogotá, Medellín, Cali, Barranquilla o Remoto."""
     if pd.isna(texto):
         return None
-    t = texto.strip().lower()
-    # FIXME BUG-01: solo cubre algunos casos. Falla con "Bogotá D.C.", "MEDELLIN",
-    # "medellín - Antioquia", "Santiago de Cali", "Teletrabajo"... (ver tests)
-    if t == "bogota":
-        return "Bogotá"
-    if t == "medellin":
-        return "Medellín"
-    if t == "remoto":
-        return "Remoto"
-    return texto
+    nombre = texto.strip()
+    normalizado = unicodedata.normalize("NFD", nombre.casefold())
+    normalizado = "".join(
+        caracter
+        for caracter in normalizado
+        if unicodedata.category(caracter) != "Mn"
+    )
+    tokens = re.findall(r"[a-z0-9]+(?:/[a-z0-9]+)?", normalizado)
+    for token in tokens:
+        ciudad = ALIAS_CIUDAD.get(token)
+        if ciudad is not None:
+            return ciudad
+    log.warning("Ciudad no reconocida: %s", texto)
+    return nombre.title()
 
 
 def parsear_salario(texto):
