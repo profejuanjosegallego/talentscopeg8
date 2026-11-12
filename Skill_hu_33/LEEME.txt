@@ -1,0 +1,12 @@
+Skill hu-33-limpiar-salarios-experiencia · HU-33 · Limpiar salarios y experiencia escritos como texto
+
+Cómo instalarla en claude.ai:
+1. Entra a claude.ai > Configuración > Capacidades y activa la ejecución de código y creación de archivos.
+2. En la sección Skills, elige Subir skill y selecciona este .zip (sin descomprimirlo).
+3. Revisa que la skill hu-33-limpiar-salarios-experiencia quede activada.
+
+Cómo usarla:
+Abre un chat nuevo y escribe (tu código ya va dentro de la skill):
+Usa mi skill hu-33-limpiar-salarios-experiencia para ayudarme con la HU-33 (Limpiar salarios y experiencia escritos como texto). Mi código actual ya está en la skill. Empecemos por el paso 1.
+
+Si cambias algo, vuelve a abrir el formulario, corrige y descarga un .zip nuevo.
