@@ -68,3 +68,13 @@ talentscope/
 - Lean primero [`docs/ONBOARDING.md`](docs/ONBOARDING.md).
 - El backlog está en [`docs/BACKLOG.md`](docs/BACKLOG.md).
 - Los squads se comunican a través del [contrato de datos](docs/CONTRATO_DATOS.md). Si necesitan cambiarlo, se negocia en el refinamiento, no por WhatsApp.
+
+## Scraping responsable
+
+Un scraper que descarga todo lo más rápido posible puede saturar un sitio y hacer que nos bloqueen. Si el portal nos bloquea, el proyecto se queda sin su fuente principal de datos. Por eso hacemos tres cosas:
+
+- **robots.txt**: antes de descargar, leemos qué permite el sitio (con `urllib.robotparser`). Un sitio tiene derecho a decir qué páginas se pueden visitar, y respetarlo es parte de hacer scraping de forma ética. Si una página está prohibida (por ejemplo `/admin/`), no la descargamos y mostramos un aviso.
+- **Pausa**: esperamos `PAUSA_SEGUNDOS` (0.1 s por defecto, en `config.py`) entre páginas para no saturar el servidor. Si el `robots.txt` pide una pausa distinta con `Crawl-delay`, usamos esa.
+- **User-Agent**: nos identificamos como `TalentScopeBot` (`USER_AGENT` en `config.py`) para que el dueño del sitio sepa quiénes somos y pueda contactarnos si hay un problema.
+
+Para comprobarlo: `pytest -k robots`.
