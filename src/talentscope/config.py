@@ -11,3 +11,5 @@ CARPETA_REPORTES = RAIZ / "reportes"
 # Portal servido localmente con:  python -m http.server 8000 --directory portal_mock
 PORTAL_URL = "http://127.0.0.1:8000/ofertas/pagina-1.html"
 USER_AGENT = "TalentScopeBot/0.3 (proyecto educativo)"
+# Segundos de espera entre peticiones, para no saturar el portal
+PAUSA_SEGUNDOS = 0.1
