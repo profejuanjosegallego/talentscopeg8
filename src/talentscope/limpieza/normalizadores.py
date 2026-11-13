@@ -1,4 +1,7 @@
 """Funciones puras de limpieza. Son las más fáciles de probar: ¡escribe tests!"""
+import re
+from datetime import date, timedelta
+
 import pandas as pd
 
 
@@ -30,3 +33,19 @@ def parsear_salario(texto):
         "A convenir"                    -> (None, None, None)
     """
     raise NotImplementedError("HU-13: pendiente")
+
+
+def parsear_fecha_publicacion(texto: str, referencia: date) -> str:
+    """Convierte 'Hoy', 'Hace N días' o 'dd/mm/aaaa' en 'AAAA-MM-DD'."""
+    t = texto.strip().lower()
+    if t == "hoy":
+        return referencia.isoformat()
+    if t.startswith("hace"):
+        # Saca el número del texto: 'hace 8 días' -> 8
+        dias = int(re.search(r"\d+", t).group())
+        # Resta esos días a la fecha de referencia
+        fecha = referencia - timedelta(days=dias)
+        return fecha.isoformat()
+    # Si llegamos aquí, el texto es dd/mm/aaaa: '29/09/2026'
+    dia, mes, anio = t.split("/")
+    return date(int(anio), int(mes), int(dia)).isoformat()
